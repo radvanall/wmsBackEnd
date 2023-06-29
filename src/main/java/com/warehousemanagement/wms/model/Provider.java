@@ -14,6 +14,7 @@ public class Provider {
     private Integer id;
     private String providerName;
     private String email;
+    private String image;
 
 
     @OneToMany(fetch = FetchType.EAGER)
@@ -53,6 +54,15 @@ public class Provider {
         this.invoiceReceptions = invoiceReceptions;
     }
 
+    public Provider(Integer id, String providerName, String email, String image, List<Position> positions, List<InvoiceReception> invoiceReceptions) {
+        this.id = id;
+        this.providerName = providerName;
+        this.email = email;
+        this.image = image;
+        this.positions = positions;
+        this.invoiceReceptions = invoiceReceptions;
+    }
+
     public String getProviderName() {
         return providerName;
     }
@@ -84,6 +94,14 @@ public class Provider {
 
     public void setInvoiceReceptions(List<InvoiceReception> invoiceReceptions) {
         this.invoiceReceptions = invoiceReceptions;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void addPositions(Position position) {
