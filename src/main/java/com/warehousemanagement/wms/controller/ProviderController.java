@@ -5,8 +5,12 @@ import com.warehousemanagement.wms.model.Provider;
 import com.warehousemanagement.wms.services.CategoryService;
 import com.warehousemanagement.wms.services.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -15,9 +19,19 @@ public class ProviderController {
     @Autowired
     private ProviderService providerService;
     @RequestMapping(method = RequestMethod.POST, value="/create")
-    public void addProvider(@RequestBody List<Provider> providerList){
-        providerService.setProvider(providerList);
+    public ResponseEntity<?>addProvider(@RequestParam("providerName")String providerName,
+                                        @RequestParam("email")String email,
+                                        @RequestParam("tel")String tel,
+                                        @RequestParam("imgName")String imgName,
+                                        @RequestParam("address")String address,
+                                        @RequestParam("image") MultipartFile file) throws IOException {
+        String response=providerService.addProvider(providerName,email,tel,imgName,address,file);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
+//    public void addProvider(@RequestBody List<Provider> providerList){
+//        providerService.setProvider(providerList);
+//    }
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
     public List<Provider> getAllProviders(){
         return providerService.getProviders();
