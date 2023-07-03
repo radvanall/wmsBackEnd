@@ -123,6 +123,6 @@ public class PositionService {
 
     public String deletePosition(Integer id) {
         positionRepository.disablePosition(id);
-        return  "datele au fost modificate cu success";
+        return  "Produsul a fost sters";
     }
 }
