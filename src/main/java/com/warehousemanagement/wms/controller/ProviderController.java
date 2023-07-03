@@ -45,9 +45,29 @@ public class ProviderController {
         return providerService.getProvider(id);
 
     }
-    @RequestMapping(method = RequestMethod.PUT, value="/update/{id}")
-    public void updateProvider(@RequestBody Provider provider,@PathVariable Integer id){
-        providerService.updateProvider(provider,id);
+//    @RequestMapping(method = RequestMethod.PUT, value="/update/{id}")
+//    public void updateProvider(@RequestBody Provider provider,@PathVariable Integer id){
+//        providerService.updateProvider(provider,id);
+//    }
+@RequestMapping(method = RequestMethod.POST, value="/update/{id}")
+public ResponseEntity<?> updateProvider(@PathVariable Integer id,
+        @RequestParam("providerName")String providerName,
+                                        @RequestParam("email")String email,
+                                        @RequestParam("tel")String tel,
+                                        @RequestParam("imgName")String imgName,
+                                        @RequestParam("address")String address,
+                                        @RequestParam("image") MultipartFile file) throws IOException {
+
+    String response=providerService.updateProvider(id,providerName,email,tel,imgName,address,file);
+    return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
+}
+    @RequestMapping(method = RequestMethod.PUT, value="/delete/{id}")
+     public ResponseEntity<?> deleteProvider(@PathVariable Integer id)
+    {
+        String response=providerService.deleteProvider(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
     @RequestMapping(method = RequestMethod.PUT, value="/addposition/{positionId}/{providerId}")
     public void addPosition(@PathVariable Integer positionId,@PathVariable Integer providerId){

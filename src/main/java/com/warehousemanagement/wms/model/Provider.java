@@ -17,6 +17,7 @@ public class Provider {
     private String tel;
     private String address;
     private String image;
+    private Boolean active;
 
 
     @OneToMany(fetch = FetchType.EAGER)
@@ -65,13 +66,32 @@ public class Provider {
         this.invoiceReceptions = invoiceReceptions;
     }
 
-    public Provider(Integer id, String providerName, String email, String tel, String address, String image, List<Position> positions, List<InvoiceReception> invoiceReceptions) {
+    public Provider(Integer id,
+                    String providerName,
+                    String email,
+                    String tel,
+                    String address,
+                    String image,
+                    List<Position> positions,
+                    List<InvoiceReception> invoiceReceptions) {
         this.id = id;
         this.providerName = providerName;
         this.email = email;
         this.tel = tel;
         this.address = address;
         this.image = image;
+        this.positions = positions;
+        this.invoiceReceptions = invoiceReceptions;
+    }
+
+    public Provider(Integer id, String providerName, String email, String tel, String address, String image, Boolean active, List<Position> positions, List<InvoiceReception> invoiceReceptions) {
+        this.id = id;
+        this.providerName = providerName;
+        this.email = email;
+        this.tel = tel;
+        this.address = address;
+        this.image = image;
+        this.active = active;
         this.positions = positions;
         this.invoiceReceptions = invoiceReceptions;
     }
@@ -131,6 +151,14 @@ public class Provider {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public void addPositions(Position position) {

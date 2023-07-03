@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,7 +29,7 @@ public class ProviderService {
         providerRepository.saveAll(categoryList);
     }
     public List<Provider> getProviders(){
-        return providerRepository.findAll();
+        return providerRepository.findByActiveTrue();
     }
     public List<Provider> getProvidersNameAndId(){
         return providerRepository.getProviderNameAndId();
@@ -36,11 +37,49 @@ public class ProviderService {
     public Provider getProvider(Integer id){
         return providerRepository.findById(id).get();
     }
-    public void updateProvider(Provider provider,Integer id){
-        Provider getProvider=providerRepository.findById(id).get();
-        getProvider.setProviderName(provider.getProviderName());
-        providerRepository.save(getProvider);
+//    public void updateProvider(Provider provider,Integer id){
+//        Provider getProvider=providerRepository.findById(id).get();
+//        getProvider.setProviderName(provider.getProviderName());
+//        providerRepository.save(getProvider);
+//    }
+public String updateProvider(Integer id,String providerName,
+                           String email,
+                           String tel,
+                           String imgName,
+                           String address,
+                           MultipartFile file ) throws IOException{
+    Provider provider=providerRepository.findById(id).get();
+    String originalImgName=provider.getImage().substring(provider.getImage().lastIndexOf('/') + 1);
+    File fileImg =new File(folder+originalImgName);
+    String dbFilePath="/img/providers/"+imgName;
+    String filePath;
+    ImageHandler imageHandler=new ImageHandler();
+    if(file.isEmpty()){
+        if (!originalImgName.equals(imgName)) {
+            String newImgName = imageHandler.setImgName(imgName,folder);
+            File newFile = new File(folder + newImgName);
+            fileImg.renameTo(newFile);
+            dbFilePath="/img/providers/"+newImgName;
+//            provider.setImage(dbFilePath);
+        }
+    }else{
+        String newImgName = imageHandler.setImgName(imgName,folder);
+        byte[] bytes = file.getBytes();
+        filePath=folder+newImgName;
+        Files.write(Paths.get(filePath), bytes);
+        dbFilePath="/img/providers/"+newImgName;
+//        provider.setImage(dbFilePath);
     }
+    provider.setProviderName(providerName);
+    provider.setEmail(email);
+    provider.setTel(tel);
+    provider.setAddress(address);
+    provider.setImage(dbFilePath);
+
+    providerRepository.save(provider);
+    return "datele au fost modificate cu success";
+}
+
 
     public void addPosition(Integer positionId, Integer providerId) {
         Provider getProvider=providerRepository.findById(providerId).get();
@@ -78,5 +117,10 @@ public class ProviderService {
             return "datele au fost incarcate cu success";
         }
         return null;
+    }
+
+    public String deleteProvider(Integer id) {
+        providerRepository.disableProvider(id);
+        return  "Furnizorul a fost șters";
     }
 }
