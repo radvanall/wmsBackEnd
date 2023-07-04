@@ -20,7 +20,7 @@ public class Administrator {
     private String name;
     private String surname;
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL},mappedBy = "administrator")
+    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL},mappedBy = "createdBy")
 //    @JoinColumn(name="administrator_id", referencedColumnName ="id" )
     private List<InvoiceReception> invoiceReceptions;
     @OneToMany(fetch = FetchType.LAZY)

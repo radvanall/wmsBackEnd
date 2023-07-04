@@ -22,8 +22,12 @@ public class InvoiceReception {
     private List<Stock> stocks;
 
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
-     @JoinColumn(name="administrator_id", referencedColumnName ="id" )
-     private Administrator administrator;
+     @JoinColumn(name="createdByAdministrator", referencedColumnName ="id" )
+     private Administrator createdBy;
+
+    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
+    @JoinColumn(name="validatedByAdministrator", referencedColumnName ="id" )
+    private Administrator validatedBy;
 
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
      @JoinColumn(name="provider_id",referencedColumnName = "id")
@@ -38,11 +42,11 @@ public class InvoiceReception {
     }
 
 
-    public InvoiceReception(List<Stock> stocks, Administrator administrator, Provider provider) {
+    public InvoiceReception(List<Stock> stocks, Administrator createdBy, Provider provider) {
         this.validated = false;
         this.dateOfCreation = new Date(System.currentTimeMillis());
         this.stocks = stocks;
-        this.administrator = administrator;
+        this.createdBy = createdBy;
         this.provider = provider;
     }
 
@@ -60,14 +64,14 @@ public class InvoiceReception {
     public void setId(Integer id) {
         this.id = id;
     }
-
-    public Date getData() {
-        return dateOfCreation;
-    }
-
-    public void setData(Date dateOfCreation) {
-        this.dateOfCreation = dateOfCreation;
-    }
+//
+//    public Date getData() {
+//        return dateOfCreation;
+//    }
+//
+//    public void setData(Date dateOfCreation) {
+//        this.dateOfCreation = dateOfCreation;
+//    }
 
     public List<Stock> getStocks() {
         return stocks;
@@ -85,14 +89,23 @@ public class InvoiceReception {
         this.validated = validated;
     }
 //    @JsonIgnore
-    public Administrator getAdministrator() {
-        return administrator;
+    public Administrator getCreatedBy() {
+        return createdBy;
     }
 //    @JsonIgnore
-    public void setAdministrator(Administrator administrator) {
-        this.administrator = administrator;
+    public void setCreatedBy(Administrator createdBy) {
+        this.createdBy = createdBy;
     }
 //    @JsonIgnore
+
+    public Administrator getValidatedBy() {
+        return validatedBy;
+    }
+
+    public void setValidatedBy(Administrator validatedBy) {
+        this.validatedBy = validatedBy;
+    }
+
     public Provider getProvider() {
         return provider;
     }
@@ -116,6 +129,8 @@ public class InvoiceReception {
     public void setDateOfValidation(Date dateOfValidation) {
         this.dateOfValidation = dateOfValidation;
     }
+
+
 
     public void copyInvoiceReception(InvoiceReception invoiceReception) {
         this.dateOfCreation = new Date(System.currentTimeMillis());
