@@ -1,5 +1,6 @@
 package com.warehousemanagement.wms.services;
 
+import com.warehousemanagement.wms.dto.InvoiceReceptionTableDTO;
 import com.warehousemanagement.wms.dto.InvoiceStockDTO;
 import com.warehousemanagement.wms.model.*;
 import com.warehousemanagement.wms.repository.*;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceReceptionService {
@@ -62,4 +64,24 @@ public class InvoiceReceptionService {
     public void deleteInvoiceReception(Integer id) {
         invoiceReceptionRepository.deleteById(id);
     }
+
+    public List<InvoiceReceptionTableDTO> getInvoiceReceptionsTable() {
+       List<InvoiceReception> invoiceReception=invoiceReceptionRepository.findAll();
+       List<InvoiceReceptionTableDTO> invoiceReceptionTableDTOS=
+       invoiceReception.stream().map(invoice->{
+           String validatedBy="none";
+           if(invoice.getValidated()) validatedBy=invoice.getValidatedBy().getNickname();
+           return new InvoiceReceptionTableDTO(invoice.getId(),invoice.getValidated(),
+                   invoice.getDateOfCreation(),invoice.getDateOfValidation(),
+                   validatedBy,invoice.getCreatedBy().getNickname(),
+                   invoice.getStocks().stream()
+                           .mapToDouble(stock -> stock.getBuyingPrice())
+                           .sum(),
+                   invoice.getStocks().stream()
+                           .mapToDouble(stock -> stock.getSellingPrice())
+                           .sum(),
+                   invoice.getProvider().getProviderName());
+             }).collect(Collectors.toList());
+          return invoiceReceptionTableDTOS;
+        }
 }
