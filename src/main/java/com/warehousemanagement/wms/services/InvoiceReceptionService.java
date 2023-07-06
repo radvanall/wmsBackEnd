@@ -1,5 +1,6 @@
 package com.warehousemanagement.wms.services;
 
+import com.warehousemanagement.wms.dto.InvoiceReceptionDTO;
 import com.warehousemanagement.wms.dto.InvoiceReceptionTableDTO;
 import com.warehousemanagement.wms.dto.InvoiceStockDTO;
 import com.warehousemanagement.wms.model.*;
@@ -48,10 +49,35 @@ public class InvoiceReceptionService {
             invoiceReceptionRepository.save(invoiceReception);
     }
 
-    public InvoiceReception getInvoiceReception(Integer id) {return invoiceReceptionRepository.findById(id).get();
+    public InvoiceReceptionDTO getInvoiceReception(Integer id) {
+            InvoiceReception invoiceReception=invoiceReceptionRepository.findById(id).get();
+        String validatedBy="none";
+        if(invoiceReception.getValidated()) validatedBy=invoiceReception.getValidatedBy().getNickname();
+            InvoiceReceptionDTO invoiceReceptionDTO=new InvoiceReceptionDTO(
+                    invoiceReception.getId(),
+                    invoiceReception.getValidated(),
+                    invoiceReception.getDateOfCreation(),
+                    invoiceReception.getDateOfValidation(),
+                    validatedBy,
+                    invoiceReception.getCreatedBy().getNickname(),
+                    invoiceReception.getStocks().stream()
+                            .mapToDouble(stock->stock.getBuyingPrice())
+                            .sum(),
+                    invoiceReception.getStocks().stream()
+                            .mapToDouble(stock -> stock.getSellingPrice())
+                            .sum(),
+                    invoiceReception.getProvider().getProviderName(),
+                    invoiceReception.getProvider().getImage(),
+                    Long.valueOf(invoiceReception.getStocks().stream().count()).intValue(),
+                    Double.valueOf(invoiceReception.getStocks().stream()
+                            .mapToDouble(Stock::getStockQuantity).sum()).intValue(),
+                    invoiceReception.getStocks()
+            );
+            return invoiceReceptionDTO;
     }
 
     public List<InvoiceReception> getInvoiceReceptions() {
+
         return invoiceReceptionRepository.findAll();
     }
 

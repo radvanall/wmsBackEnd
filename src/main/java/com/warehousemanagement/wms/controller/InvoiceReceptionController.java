@@ -3,6 +3,7 @@ package com.warehousemanagement.wms.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.warehousemanagement.wms.dto.InvoiceReceptionDTO;
 import com.warehousemanagement.wms.dto.InvoiceReceptionTableDTO;
 import com.warehousemanagement.wms.dto.InvoiceStockDTO;
 import com.warehousemanagement.wms.model.InvoiceReception;
@@ -47,7 +48,7 @@ public class InvoiceReceptionController {
         return invoiceReceptionService.getInvoiceReceptionsTable();
     }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
-    public InvoiceReception getInvoiceReception(@PathVariable Integer id){
+    public InvoiceReceptionDTO getInvoiceReception(@PathVariable Integer id){
         return invoiceReceptionService.getInvoiceReception(id);
     }
     @RequestMapping(method = RequestMethod.PUT, value="/update/{id}")
