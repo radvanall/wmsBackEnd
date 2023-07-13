@@ -110,4 +110,15 @@ public class InvoiceReceptionService {
              }).collect(Collectors.toList());
           return invoiceReceptionTableDTOS;
         }
+
+
+        public String validateInvoice(Integer id) {
+            InvoiceReception getInvoice=invoiceReceptionRepository.findById(id).get();
+            Administrator administrator=administratorRepository.findById(1).get();
+            getInvoice.setValidated(true);
+            getInvoice.setValidatedBy(administrator);
+            invoiceReceptionRepository.save(getInvoice);
+            return "Factura a fost validată";
+        }
+
 }

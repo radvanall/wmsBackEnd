@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/invoiceReception")
@@ -59,6 +60,15 @@ public class InvoiceReceptionController {
     @RequestMapping(method = RequestMethod.DELETE, value="/delete/{id}")
     public void deleteInvoiceReception( @PathVariable Integer id){
         invoiceReceptionService.deleteInvoiceReception(id);
+    }
+    @RequestMapping(method = RequestMethod.POST, value="/validate")
+    public  ResponseEntity<?> validateInvoice( @RequestBody Map<String, Integer> request){
+        Integer id=request.get("id");
+        System.out.println("id="+id);
+        String response=invoiceReceptionService.validateInvoice(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+
     }
 
 }
