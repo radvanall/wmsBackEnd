@@ -31,4 +31,9 @@ public class StockService {
         getStock.copyStock(stock);
         stockRepository.save(getStock);
     }
+
+    public String deleteStock(Integer id) {
+        stockRepository.deleteById(id);
+        return "Stocul a fost șters.";
+    }
 }
