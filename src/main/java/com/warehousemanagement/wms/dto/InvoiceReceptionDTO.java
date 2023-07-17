@@ -15,6 +15,7 @@ public class InvoiceReceptionDTO {
     private Double totalBuyingPrice;
     private Double totalSellingPrice;
     private String provider;
+    private Integer providerId;
     private String image;
     private Integer numberOfStocks;
     private Integer numberOfProducts;
@@ -32,6 +33,7 @@ public class InvoiceReceptionDTO {
                                Double totalBuyingPrice,
                                Double totalSellingPrice,
                                String provider,
+                               Integer providerId,
                                String image,
                                Integer numberOfStocks,
                                Integer numberOfProducts,
@@ -45,6 +47,7 @@ public class InvoiceReceptionDTO {
         this.totalBuyingPrice = totalBuyingPrice;
         this.totalSellingPrice = totalSellingPrice;
         this.provider = provider;
+        this.providerId=providerId;
         this.image = image;
         this.numberOfStocks = numberOfStocks;
         this.numberOfProducts = numberOfProducts;
@@ -145,6 +148,14 @@ public class InvoiceReceptionDTO {
 
     public void setNumberOfProducts(Integer numberOfProducts) {
         this.numberOfProducts = numberOfProducts;
+    }
+
+    public Integer getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(Integer providerId) {
+        this.providerId = providerId;
     }
 
     public List<Stock> getStocks() {

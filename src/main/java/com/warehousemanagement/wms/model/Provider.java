@@ -96,6 +96,7 @@ public class Provider {
         this.invoiceReceptions = invoiceReceptions;
     }
 
+
     public String getProviderName() {
         return providerName;
     }
