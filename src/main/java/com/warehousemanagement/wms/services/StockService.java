@@ -26,10 +26,16 @@ public class StockService {
         return stockRepository.findById(id).get();
     }
 
-    public void updateStock(Stock stock, Integer id) {
+    public String updateStock(Integer id,
+                            Double buyingPrice,
+                            Double sellingPrice,
+                            Integer quantity) {
         Stock getStock=stockRepository.findById(id).get();
-        getStock.copyStock(stock);
+        getStock.setBuyingPrice(buyingPrice);
+        getStock.setSellingPrice(sellingPrice);
+        getStock.setStockQuantity(quantity);
         stockRepository.save(getStock);
+        return "Stocul a fost modificat";
     }
 
     public String deleteStock(Integer id) {

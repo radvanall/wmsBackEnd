@@ -30,9 +30,15 @@ public class StockController {
         return stockService.getStock(id);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value="/update/{id}")
-    public void updateStock(@RequestBody Stock stock,@PathVariable Integer id){
-        stockService.updateStock(stock,id);
+    @RequestMapping(method = RequestMethod.POST, value="/update")
+    public ResponseEntity<?> updateStock(@RequestParam("id") Integer id,
+                            @RequestParam("buyingPrice") Double buyingPrice,
+                            @RequestParam("sellingPrice") Double sellingPrice,
+                            @RequestParam("quantity") Integer quantity
+                            ){
+       String response= stockService.updateStock(id,buyingPrice,sellingPrice,quantity);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
 
     @RequestMapping(method = RequestMethod.POST, value="/delete")
