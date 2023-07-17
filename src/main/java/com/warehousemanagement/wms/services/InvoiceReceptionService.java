@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,7 +49,17 @@ public class InvoiceReceptionService {
             stockRepository.saveAll(stocks);
             invoiceReceptionRepository.save(invoiceReception);
     }
-
+     public String addStock(Map<String, Integer> stock){
+         Position position=positionRepository.findById(stock.get("productId")).get();
+         InvoiceReception invoiceReception=invoiceReceptionRepository.findById(stock.get("invoiceId")).get();
+         Stock newStock=new Stock(stock.get("stockQuantity"),Double.valueOf(stock.get("sellingPrice")),
+                 Double.valueOf(stock.get("buyingPrice")),position);
+         invoiceReception.getStocks().add(newStock);
+         stockRepository.save(newStock);
+         invoiceReceptionRepository.save(invoiceReception);
+         System.out.println(position);
+         return "Stocul a fost salvat";
+     }
     public InvoiceReceptionDTO getInvoiceReception(Integer id) {
             InvoiceReception invoiceReception=invoiceReceptionRepository.findById(id).get();
         String validatedBy="none";
@@ -67,6 +78,7 @@ public class InvoiceReceptionService {
                             .mapToDouble(stock -> stock.getSellingPrice())
                             .sum(),
                     invoiceReception.getProvider().getProviderName(),
+                    invoiceReception.getProvider().getId(),
                     invoiceReception.getProvider().getImage(),
                     Long.valueOf(invoiceReception.getStocks().stream().count()).intValue(),
                     Double.valueOf(invoiceReception.getStocks().stream()

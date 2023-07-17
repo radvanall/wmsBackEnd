@@ -70,6 +70,14 @@ public class InvoiceReceptionController {
                 .body(response);
 
     }
+    @RequestMapping(method = RequestMethod.POST, value="/addStock")
+    public  ResponseEntity<?> addStock( @RequestBody Map<String, Integer> stock){
+        System.out.println("request="+stock);
+        String response=invoiceReceptionService.addStock(stock);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("response");
+
+    }
 
 }
 
