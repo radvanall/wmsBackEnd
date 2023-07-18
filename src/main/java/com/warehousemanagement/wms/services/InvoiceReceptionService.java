@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -129,6 +130,7 @@ public class InvoiceReceptionService {
             Administrator administrator=administratorRepository.findById(1).get();
             getInvoice.setValidated(true);
             getInvoice.setValidatedBy(administrator);
+            getInvoice.setDateOfValidation(new Date(System.currentTimeMillis()));
             invoiceReceptionRepository.save(getInvoice);
             return "Factura a fost validată";
         }

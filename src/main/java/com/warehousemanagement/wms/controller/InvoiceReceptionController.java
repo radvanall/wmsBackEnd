@@ -75,7 +75,7 @@ public class InvoiceReceptionController {
         System.out.println("request="+stock);
         String response=invoiceReceptionService.addStock(stock);
         return ResponseEntity.status(HttpStatus.OK)
-                .body("response");
+                .body(response);
 
     }
 
