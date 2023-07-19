@@ -57,9 +57,11 @@ public class InvoiceReceptionController {
         invoiceReceptionService.updateInvoiceReception(invoiceReception,id);
 
     }
-    @RequestMapping(method = RequestMethod.DELETE, value="/delete/{id}")
-    public void deleteInvoiceReception( @PathVariable Integer id){
-        invoiceReceptionService.deleteInvoiceReception(id);
+    @RequestMapping(method = RequestMethod.PUT, value="/delete/{id}")
+    public ResponseEntity<?> deleteInvoiceReception( @PathVariable Integer id){
+        String response =invoiceReceptionService.deleteInvoiceReception(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
     @RequestMapping(method = RequestMethod.POST, value="/validate")
     public  ResponseEntity<?> validateInvoice( @RequestBody Map<String, Integer> request){

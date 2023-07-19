@@ -38,7 +38,7 @@ public class InvoiceReceptionService {
             List<Stock>stocks=new ArrayList<>();
             for(InvoiceStockDTO invoiceStock:invoiceStockDTOList){
                 Position position=positionRepository.findById(invoiceStock.getProductId()).get();
-                stocks.add(new Stock(invoiceStock.getStockQuantity(),invoiceStock.getSellingPrice(),invoiceStock.getBuyingPrice(),position));
+                stocks.add(new Stock(invoiceStock.getStockQuantity(),invoiceStock.getBuyingPrice(),invoiceStock.getSellingPrice(),position));
 
             }
             System.out.println("invoiceList2="+stocks.toString());
@@ -53,8 +53,10 @@ public class InvoiceReceptionService {
      public String addStock(Map<String, Integer> stock){
          Position position=positionRepository.findById(stock.get("productId")).get();
          InvoiceReception invoiceReception=invoiceReceptionRepository.findById(stock.get("invoiceId")).get();
-         Stock newStock=new Stock(stock.get("stockQuantity"),Double.valueOf(stock.get("sellingPrice")),
-                 Double.valueOf(stock.get("buyingPrice")),position);
+         Stock newStock=new Stock(stock.get("stockQuantity"),
+                 Double.valueOf(stock.get("buyingPrice")),
+                 Double.valueOf(stock.get("sellingPrice")),
+                 position);
          invoiceReception.getStocks().add(newStock);
          stockRepository.save(newStock);
          invoiceReceptionRepository.save(invoiceReception);
@@ -100,8 +102,9 @@ public class InvoiceReceptionService {
         invoiceReceptionRepository.save(getInvoiceReception);
     }
 
-    public void deleteInvoiceReception(Integer id) {
+    public String deleteInvoiceReception(Integer id) {
         invoiceReceptionRepository.deleteById(id);
+        return "Factura a fost ștearsă";
     }
 
     public List<InvoiceReceptionTableDTO> getInvoiceReceptionsTable() {
@@ -130,6 +133,7 @@ public class InvoiceReceptionService {
             Administrator administrator=administratorRepository.findById(1).get();
             getInvoice.setValidated(true);
             getInvoice.setValidatedBy(administrator);
+            getInvoice.getStocks().forEach(stock -> stock.setState("validated"));
             getInvoice.setDateOfValidation(new Date(System.currentTimeMillis()));
             invoiceReceptionRepository.save(getInvoice);
             return "Factura a fost validată";
