@@ -17,19 +17,19 @@ public class InvoiceReception {
     private Date dateOfCreation;
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfValidation;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name="invoice_reception_id",referencedColumnName ="id")
     private List<Stock> stocks;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.EAGER)
      @JoinColumn(name="createdByAdministrator", referencedColumnName ="id" )
      private Administrator createdBy;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="validatedByAdministrator", referencedColumnName ="id" )
     private Administrator validatedBy;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.EAGER)
      @JoinColumn(name="provider_id",referencedColumnName = "id")
      private Provider provider;
 
