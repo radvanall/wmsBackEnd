@@ -1,14 +1,15 @@
 package com.warehousemanagement.wms.services;
 
-import com.warehousemanagement.wms.model.Administrator;
+import com.warehousemanagement.wms.dto.StockCardDTO;
 import com.warehousemanagement.wms.model.Stock;
-import com.warehousemanagement.wms.model.Subcategory;
 import com.warehousemanagement.wms.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class StockService {
@@ -18,8 +19,29 @@ public class StockService {
     public void setStock(List<Stock> stockList) {
       stockRepository.saveAll(stockList);
     }
-    public List<Stock> getStocks() {
-        return stockRepository.findAll();
+    public Page<StockCardDTO> getStocks(Integer size, Integer page) {
+        Sort sortByDateOfCreation=Sort.by(Sort.Direction.DESC,"invoiceReception.dateOfCreation");
+        Pageable pageable= PageRequest.of(page,size,sortByDateOfCreation);
+        Page<Stock> stockPage = stockRepository.findAll(pageable);
+        if (!stockPage.hasContent()) {
+            throw new NoSuchElementException("Requested page does not exist");
+        }
+
+       List<StockCardDTO> stockCardDTOS=  stockPage.getContent().stream()
+                .map(stock -> new StockCardDTO(stock.getId(),
+                        stock.getPosition().getName(),
+                        stock.getPosition().getImage(),
+                        stock.getInvoiceReception().getProvider().getProviderName(),
+                        stock.getInvoiceReception().getProvider().getImage(),
+                        stock.getStockQuantity(),stock.getRemainingQuantity(),
+                        stock.getBuyingPrice(),stock.getSellingPrice(),
+                        stock.getBuyingPrice()*stock.getStockQuantity(),
+                        stock.getSellingPrice()*stock.getStockQuantity(),
+                        stock.getInvoiceReception().getDateOfCreation(),
+                        stock.getInvoiceReception().getDateOfValidation(),
+                        stock.getState(),stock.getInvoiceReception().getId()))
+               .collect(Collectors.toList());
+         return new PageImpl<>(stockCardDTOS, pageable, stockPage.getTotalElements());
     }
 
     public Stock getStock(Integer id) {
@@ -34,6 +56,7 @@ public class StockService {
         getStock.setBuyingPrice(buyingPrice);
         getStock.setSellingPrice(sellingPrice);
         getStock.setStockQuantity(quantity);
+        getStock.setRemainingQuantity(quantity);
         stockRepository.save(getStock);
         return "Stocul a fost modificat";
     }

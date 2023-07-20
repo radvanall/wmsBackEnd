@@ -1,10 +1,12 @@
 package com.warehousemanagement.wms.controller;
 
+import com.warehousemanagement.wms.dto.StockCardDTO;
 import com.warehousemanagement.wms.model.Provider;
 import com.warehousemanagement.wms.model.Stock;
 import com.warehousemanagement.wms.model.Subcategory;
 import com.warehousemanagement.wms.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,10 @@ public class StockController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
-    public List<Stock> getAllStock(){
-        return stockService.getStocks();
+    public Page<StockCardDTO> getAllStock(@RequestParam Integer size,
+                                          @RequestParam Integer page){
+        Page<StockCardDTO> stocks=stockService.getStocks(size,page);
+        return stocks;
     }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
     public Stock getStock(@PathVariable Integer id){
