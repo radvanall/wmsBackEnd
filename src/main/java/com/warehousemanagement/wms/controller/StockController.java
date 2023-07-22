@@ -25,8 +25,10 @@ public class StockController {
 
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
     public Page<StockCardDTO> getAllStock(@RequestParam Integer size,
-                                          @RequestParam Integer page){
-        Page<StockCardDTO> stocks=stockService.getStocks(size,page);
+                                          @RequestParam Integer page,
+                                          @RequestParam String sortDirection
+                                          ){
+        Page<StockCardDTO> stocks=stockService.getStocks(size,page,sortDirection);
         return stocks;
     }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
@@ -44,7 +46,24 @@ public class StockController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
+    @RequestMapping(method = RequestMethod.POST, value="/updateSellingPrice")
+    public ResponseEntity<?> updateSellingPrice(@RequestParam("id") Integer id,
+                                         @RequestParam("sellingPrice") Double sellingPrice
 
+    ){
+        String response= stockService.updateSellingPrice(id,sellingPrice);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+    @RequestMapping(method = RequestMethod.POST, value="/updateState")
+    public ResponseEntity<?> updateState(@RequestParam("id") Integer id,
+                                         @RequestParam("state") String state
+
+    ){
+        String response= stockService.updateState(id,state);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
     @RequestMapping(method = RequestMethod.POST, value="/delete")
     public ResponseEntity<?> deleteStock(@RequestBody Map<String, Integer> request){
         Integer id=request.get("id");
