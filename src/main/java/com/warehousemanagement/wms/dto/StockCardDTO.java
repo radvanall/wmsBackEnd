@@ -12,6 +12,7 @@ public class StockCardDTO {
     private String providerImg;
     private Integer quantity;
     private Integer remainingQuantity;
+    private String unity;
     private Double buyingPrice;
     private Double sellingPrice;
     private Double totalBuyingPrice;
@@ -19,6 +20,7 @@ public class StockCardDTO {
     private Date dateOfCreation;
     private Date dateOfValidation;
     private String state;
+
     private Integer invoiceId;
 
     public StockCardDTO(Integer id,
@@ -28,6 +30,7 @@ public class StockCardDTO {
                         String providerImg,
                         Integer quantity,
                         Integer remainingQuantity,
+                        String unity,
                         Double buyingPrice,
                         Double sellingPrice,
                         Double totalBuyingPrice,
@@ -43,6 +46,7 @@ public class StockCardDTO {
         this.providerImg = providerImg;
         this.quantity = quantity;
         this.remainingQuantity = remainingQuantity;
+        this.unity=unity;
         this.buyingPrice = buyingPrice;
         this.sellingPrice = sellingPrice;
         this.totalBuyingPrice = totalBuyingPrice;
@@ -171,5 +175,13 @@ public class StockCardDTO {
 
     public void setInvoiceId(Integer invoiceId) {
         this.invoiceId = invoiceId;
+    }
+
+    public String getUnity() {
+        return unity;
+    }
+
+    public void setUnity(String unity) {
+        this.unity = unity;
     }
 }
