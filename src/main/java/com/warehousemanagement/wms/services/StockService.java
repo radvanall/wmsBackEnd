@@ -19,8 +19,12 @@ public class StockService {
     public void setStock(List<Stock> stockList) {
       stockRepository.saveAll(stockList);
     }
-    public Page<StockCardDTO> getStocks(Integer size, Integer page) {
-        Sort sortByDateOfCreation=Sort.by(Sort.Direction.DESC,"invoiceReception.dateOfCreation");
+    public Page<StockCardDTO> getStocks(Integer size, Integer page,String sortDirection) {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sortDirection.equalsIgnoreCase("DESC")) {
+            direction = Sort.Direction.DESC;
+        }
+        Sort sortByDateOfCreation=Sort.by(direction,"invoiceReception.dateOfCreation");
         Pageable pageable= PageRequest.of(page,size,sortByDateOfCreation);
         Page<Stock> stockPage = stockRepository.findAll(pageable);
         if (!stockPage.hasContent()) {
@@ -34,6 +38,7 @@ public class StockService {
                         stock.getInvoiceReception().getProvider().getProviderName(),
                         stock.getInvoiceReception().getProvider().getImage(),
                         stock.getStockQuantity(),stock.getRemainingQuantity(),
+                        stock.getPosition().getUnity(),
                         stock.getBuyingPrice(),stock.getSellingPrice(),
                         stock.getBuyingPrice()*stock.getStockQuantity(),
                         stock.getSellingPrice()*stock.getStockQuantity(),
@@ -64,5 +69,19 @@ public class StockService {
     public String deleteStock(Integer id) {
         stockRepository.deleteById(id);
         return "Stocul a fost șters.";
+    }
+
+    public String updateSellingPrice(Integer id, Double sellingPrice) {
+        Stock getStock=stockRepository.findById(id).get();
+        getStock.setSellingPrice(sellingPrice);
+        stockRepository.save(getStock);
+        return "Stocul a fost modificat";
+    }
+
+    public String updateState(Integer id, String state) {
+        Stock getStock=stockRepository.findById(id).get();
+        getStock.setState(state);
+        stockRepository.save(getStock);
+        return "Statutul stocului a fost modificat";
     }
 }
