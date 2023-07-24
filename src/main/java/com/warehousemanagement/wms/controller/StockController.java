@@ -1,6 +1,7 @@
 package com.warehousemanagement.wms.controller;
 
 import com.warehousemanagement.wms.dto.StockCardDTO;
+import com.warehousemanagement.wms.dto.StockFilterFieldsDTO;
 import com.warehousemanagement.wms.model.Provider;
 import com.warehousemanagement.wms.model.Stock;
 import com.warehousemanagement.wms.model.Subcategory;
@@ -34,6 +35,12 @@ public class StockController {
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
     public Stock getStock(@PathVariable Integer id){
         return stockService.getStock(id);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value="/filterSettings")
+    public StockFilterFieldsDTO getStocksFilterFields(){
+
+        return stockService.getStocksFilterFields();
     }
 
     @RequestMapping(method = RequestMethod.POST, value="/update")

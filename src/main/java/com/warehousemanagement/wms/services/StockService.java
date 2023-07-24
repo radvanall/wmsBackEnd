@@ -1,8 +1,8 @@
 package com.warehousemanagement.wms.services;
 
-import com.warehousemanagement.wms.dto.StockCardDTO;
-import com.warehousemanagement.wms.model.Stock;
-import com.warehousemanagement.wms.repository.StockRepository;
+import com.warehousemanagement.wms.dto.*;
+import com.warehousemanagement.wms.model.*;
+import com.warehousemanagement.wms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,14 @@ import java.util.stream.Collectors;
 public class StockService {
     @Autowired
     private StockRepository stockRepository;
+    @Autowired
+    private ProviderRepository providerRepository;
+    @Autowired
+    private PositionRepository positionRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private SubcategoryRepository subcategoryRepository;
 
     public void setStock(List<Stock> stockList) {
       stockRepository.saveAll(stockList);
@@ -83,5 +91,41 @@ public class StockService {
         getStock.setState(state);
         stockRepository.save(getStock);
         return "Statutul stocului a fost modificat";
+    }
+
+    public StockFilterFieldsDTO getStocksFilterFields() {
+        List<Provider> providers= providerRepository.findAll();
+        List<FilterProviderDTO> filterProviderDTOS = providers.stream()
+                .map(provider -> new FilterProviderDTO(
+                        provider.getId(),
+                        provider.getProviderName(),
+                        provider.getPositions().stream()
+                                .map(position -> position.getId())
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+        List<Position> positions= positionRepository.findAll();
+        List<FilterProductDTO> productDTOS=positions.stream()
+                .map(position -> new FilterProductDTO(position.getId(),position.getName()))
+                .collect(Collectors.toList());
+        List<Category> categories=categoryRepository.findAll();
+        List<FilterCategoryDTO> categoryDTOS=categories.stream()
+                .map(category -> new FilterCategoryDTO(category.getId(),category.getCategoryName(),
+                        category.getPositions().stream().map(position -> position.getId())
+                        .collect(Collectors.toList()))).collect(Collectors.toList());
+        List<Subcategory> subcategories=subcategoryRepository.findAll();
+        List<FilterSubcategoryDTO> filterSubcategoryDTOS=subcategories.stream()
+                .map(subcategory -> new FilterSubcategoryDTO(subcategory.getId(),
+                        subcategory.getSubcategoryName(),subcategory.getPositions().stream().map(position ->
+                        position.getId()).collect(Collectors.toList())))
+                .collect(Collectors.toList());
+        Integer maxQuantity=stockRepository.findMaxQuantity();
+        Double maxSellingPrice=stockRepository.findMaxSellingPrice();
+        Double maxBuyingPrice=stockRepository.findMaxBuyingPrice();
+        StockFilterFieldsDTO stockFilterFieldsDTO=new StockFilterFieldsDTO(
+           filterProviderDTOS,productDTOS,categoryDTOS,filterSubcategoryDTOS,maxBuyingPrice,maxSellingPrice,maxQuantity
+        );
+        return stockFilterFieldsDTO;
+
     }
 }
