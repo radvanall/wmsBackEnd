@@ -69,6 +69,22 @@ public class Position {
     @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL} ,mappedBy="position")
 //    @JoinColumn(name = "position_id",referencedColumnName = "id")
     private List<Stock> stocks;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "provider_id",referencedColumnName = "id")
+    private Provider provider;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id",referencedColumnName = "id")
+    private Category category;
+
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "subcategory_id",referencedColumnName = "id")
+    private Subcategory subcategory;
+
 
     public Position() {
     }
@@ -82,6 +98,7 @@ public class Position {
         this.unity = unity;
 
     }
+
 
     public Position(Integer id, String name, String description, String image, String unity, boolean active, List<Stock> stocks) {
         this.id = id;
@@ -100,6 +117,24 @@ public class Position {
         this.unity=unity;
     }
 
+    public Position(Integer id, String name,
+                    String description, String image,
+                    String unity, boolean active,
+                    List<Stock> stocks, Provider provider,
+                    Category category,Subcategory subcategory) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.image = image;
+        this.unity = unity;
+        this.active = active;
+        this.stocks = stocks;
+        this.provider = provider;
+        this.category=category;
+        this.subcategory=subcategory;
+
+
+    }
 
     public Integer getId() {
         return id;
@@ -168,6 +203,30 @@ public class Position {
 //        this.stocks = position.stocks;
         this.unity=position.unity;
 
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Subcategory getSubcategory() {
+        return subcategory;
+    }
+
+    public void setSubcategory(Subcategory subcategory) {
+        this.subcategory = subcategory;
     }
 
     @Override
