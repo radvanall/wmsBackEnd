@@ -1,6 +1,7 @@
 package com.warehousemanagement.wms.controller;
 
 import com.warehousemanagement.wms.dto.StockCardDTO;
+import com.warehousemanagement.wms.dto.StockFilterCriteriaDTO;
 import com.warehousemanagement.wms.dto.StockFilterFieldsDTO;
 import com.warehousemanagement.wms.model.Provider;
 import com.warehousemanagement.wms.model.Stock;
@@ -24,12 +25,16 @@ public class StockController {
     public void addStock(@RequestBody List<Stock> stockList){stockService.setStock(stockList);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value="/readAll")
+
+    @RequestMapping(method = RequestMethod.POST, value="/readAll")
     public Page<StockCardDTO> getAllStock(@RequestParam Integer size,
                                           @RequestParam Integer page,
-                                          @RequestParam String sortDirection
+                                          @RequestParam String sortDirection,
+                                          @RequestBody (required = false)
+                                                      StockFilterCriteriaDTO filterCriteriaDTO
                                           ){
-        Page<StockCardDTO> stocks=stockService.getStocks(size,page,sortDirection);
+
+        Page<StockCardDTO> stocks=stockService.getStocks(size,page,sortDirection,filterCriteriaDTO);
         return stocks;
     }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
