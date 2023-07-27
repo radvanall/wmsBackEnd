@@ -27,16 +27,40 @@ public class StockService {
     public void setStock(List<Stock> stockList) {
       stockRepository.saveAll(stockList);
     }
-    public Page<StockCardDTO> getStocks(Integer size, Integer page,String sortDirection) {
+    public Page<StockCardDTO> getStocks(Integer size, Integer page, String sortDirection, StockFilterCriteriaDTO filterCriteriaDTO) {
+
         Sort.Direction direction = Sort.Direction.ASC;
         if (sortDirection.equalsIgnoreCase("DESC")) {
             direction = Sort.Direction.DESC;
         }
         Sort sortByDateOfCreation=Sort.by(direction,"invoiceReception.dateOfCreation");
         Pageable pageable= PageRequest.of(page,size,sortByDateOfCreation);
-        Page<Stock> stockPage = stockRepository.findAll(pageable);
+//        Page<Stock> stockPage = stockRepository.findAll(pageable);
+        Page<Stock> stockPage;
+        if(filterCriteriaDTO==null){
+            System.out.println("object is null");
+            stockPage=stockRepository.findAll(pageable);
+        }
+        else{ System.out.println("filterCriteria:"+filterCriteriaDTO.toString());
+        stockPage=stockRepository.findAllByFilterCriteria(
+                filterCriteriaDTO.getProviders(),
+                filterCriteriaDTO.getCategories(),
+                filterCriteriaDTO.getSubcategories(),
+                filterCriteriaDTO.getProducts(),
+                filterCriteriaDTO.getStatus(),
+                filterCriteriaDTO.getMaxBuyingPrice(),
+                filterCriteriaDTO.getMinBuyingPrice(),
+                filterCriteriaDTO.getMaxSellingPrice(),
+                filterCriteriaDTO.getMinSellingPrice(),
+                filterCriteriaDTO.getMaxQuantity(),
+                filterCriteriaDTO.getMinQuantity(),
+                pageable
+        );
+        }
+
         if (!stockPage.hasContent()) {
-            throw new NoSuchElementException("Requested page does not exist");
+            System.out.println("stockPage:"+stockPage.toString());
+//            throw new NoSuchElementException("Requested page does not exist");
         }
 
        List<StockCardDTO> stockCardDTOS=  stockPage.getContent().stream()
