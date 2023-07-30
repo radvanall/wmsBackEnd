@@ -31,7 +31,7 @@ public interface StockRepository extends JpaRepository<Stock,Integer> {
         "AND (COALESCE(:categories) IS NULL OR s.position.category.id IN :categories) " +
         "AND (COALESCE(:subcategories) IS NULL OR s.position.subcategory.id IN :subcategories) " +
         "AND (COALESCE(:products) IS NULL OR s.position.id IN :products) " +
-        "AND ('allStates' IN :status OR s.state IN :status)")
+        "AND (COALESCE(:status) IS NULL OR 'allStates' IN :status OR s.state IN :status)")
     Page<Stock> findAllByFilterCriteria(
                                          @Param("providers") List<Integer> providers,
                                           @Param("categories") List<Integer> categories,
