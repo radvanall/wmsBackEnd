@@ -76,7 +76,10 @@ public class StockService {
                         stock.getSellingPrice()*stock.getStockQuantity(),
                         stock.getInvoiceReception().getDateOfCreation(),
                         stock.getInvoiceReception().getDateOfValidation(),
-                        stock.getState(),stock.getInvoiceReception().getId()))
+                        stock.getState(),
+                        stock.getPosition().getCategory().getCategoryName(),
+                        stock.getPosition().getSubcategory().getSubcategoryName(),
+                        stock.getInvoiceReception().getId()))
                .collect(Collectors.toList());
          return new PageImpl<>(stockCardDTOS, pageable, stockPage.getTotalElements());
     }

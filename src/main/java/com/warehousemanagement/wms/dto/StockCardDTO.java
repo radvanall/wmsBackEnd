@@ -20,6 +20,8 @@ public class StockCardDTO {
     private Date dateOfCreation;
     private Date dateOfValidation;
     private String state;
+    private String categoryName;
+    private String subcategoryName;
 
     private Integer invoiceId;
 
@@ -54,6 +56,44 @@ public class StockCardDTO {
         this.dateOfCreation = dateOfCreation;
         this.dateOfValidation = dateOfValidation;
         this.state = state;
+        this.invoiceId = invoiceId;
+    }
+
+    public StockCardDTO(Integer id,
+                        String position,
+                        String positionImg,
+                        String provider,
+                        String providerImg,
+                        Integer quantity,
+                        Integer remainingQuantity,
+                        String unity,
+                        Double buyingPrice,
+                        Double sellingPrice,
+                        Double totalBuyingPrice,
+                        Double totalSellingPrice,
+                        Date dateOfCreation,
+                        Date dateOfValidation,
+                        String state,
+                        String categoryName,
+                        String subcategoryName,
+                        Integer invoiceId) {
+        this.id = id;
+        this.position = position;
+        this.positionImg = positionImg;
+        this.provider = provider;
+        this.providerImg = providerImg;
+        this.quantity = quantity;
+        this.remainingQuantity = remainingQuantity;
+        this.unity = unity;
+        this.buyingPrice = buyingPrice;
+        this.sellingPrice = sellingPrice;
+        this.totalBuyingPrice = totalBuyingPrice;
+        this.totalSellingPrice = totalSellingPrice;
+        this.dateOfCreation = dateOfCreation;
+        this.dateOfValidation = dateOfValidation;
+        this.state = state;
+        this.categoryName = categoryName;
+        this.subcategoryName = subcategoryName;
         this.invoiceId = invoiceId;
     }
 
@@ -183,5 +223,21 @@ public class StockCardDTO {
 
     public void setUnity(String unity) {
         this.unity = unity;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getSubcategoryName() {
+        return subcategoryName;
+    }
+
+    public void setSubcategoryName(String subcategoryName) {
+        this.subcategoryName = subcategoryName;
     }
 }
