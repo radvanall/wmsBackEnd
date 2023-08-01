@@ -1,7 +1,9 @@
 package com.warehousemanagement.wms.services;
 
+import com.warehousemanagement.wms.dto.PositionForSaleDTO;
 import com.warehousemanagement.wms.dto.ProductDTO;
 import com.warehousemanagement.wms.dto.ProductTableDTO;
+import com.warehousemanagement.wms.dto.StockForSale;
 import com.warehousemanagement.wms.model.Position;
 import com.warehousemanagement.wms.repository.PositionRepository;
 
@@ -23,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PositionService {
@@ -124,5 +127,18 @@ public class PositionService {
     public String deletePosition(Integer id) {
         positionRepository.disablePosition(id);
         return  "Produsul a fost sters";
+    }
+
+    public List<PositionForSaleDTO> getPositionsForSale() {
+        List<Position> positions=positionRepository. findPositionsWithSaleStocks();
+        List<PositionForSaleDTO> positionForSaleDTOS = positions.stream().map((position ->
+                new PositionForSaleDTO(position.getId(),position.getName(),position.getImage()
+                ,position.getUnity(), position.getStocks().stream()
+                        .filter(stock -> "forSale".equals(stock.getState()) || "inSale".equals(stock.getState()))
+                        .map(item->new StockForSale(item.getId(),position.getId(),item.getSellingPrice(),
+                                item.getRemainingQuantity(),item.getState())).collect(Collectors.toList()))))
+                .collect(Collectors.toList());
+        return positionForSaleDTOS;
+
     }
 }

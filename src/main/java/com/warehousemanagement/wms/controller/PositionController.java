@@ -1,5 +1,6 @@
 package com.warehousemanagement.wms.controller;
 
+import com.warehousemanagement.wms.dto.PositionForSaleDTO;
 import com.warehousemanagement.wms.dto.ProductDTO;
 import com.warehousemanagement.wms.dto.ProductTableDTO;
 import com.warehousemanagement.wms.model.Position;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,6 +78,11 @@ public class PositionController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(uploadImage);
+    }
+    @RequestMapping(method=RequestMethod.GET,value="/getPositionsForSale")
+    public  List<PositionForSaleDTO> getPositionsForSale(){
+        List<PositionForSaleDTO> positionForSaleDTOS=positionService.getPositionsForSale();
+        return positionForSaleDTOS;
     }
     @RequestMapping(method = RequestMethod.GET,value="/readproduct/{id}")
     public ProductDTO getProduct(@PathVariable  Integer id) throws IOException {

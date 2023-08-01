@@ -48,4 +48,6 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
     @Transactional
      @Query("Update Position set active=false where id=:id")
     void disablePosition(@Param("id")Integer id);
+    @Query("SELECT DISTINCT p FROM Position p JOIN p.stocks s WHERE s.state IN ('inSale', 'forSale')")
+    List<Position> findPositionsWithSaleStocks();
 }
