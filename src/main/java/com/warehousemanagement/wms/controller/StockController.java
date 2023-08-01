@@ -37,6 +37,10 @@ public class StockController {
         Page<StockCardDTO> stocks=stockService.getStocks(size,page,sortDirection,filterCriteriaDTO);
         return stocks;
     }
+    @RequestMapping(method=RequestMethod.GET,value="/getStocksByProductId/{id}")
+    public List<StockCardDTO>getStocksByProductId(@PathVariable Integer id){
+        return stockService.getStocksByProductId(id);
+    }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
     public Stock getStock(@PathVariable Integer id){
         return stockService.getStock(id);

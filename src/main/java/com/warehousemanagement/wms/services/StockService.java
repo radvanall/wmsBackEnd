@@ -155,4 +155,21 @@ public class StockService {
         return stockFilterFieldsDTO;
 
     }
+
+    public List<StockCardDTO> getStocksByProductId(Integer id) {
+        List<Stock> stocks=stockRepository.findStocksByPositionId(id);
+        List<StockCardDTO> stockCardDTOS=stocks.stream().map(stock ->
+            new StockCardDTO(stock.getId(),stock.getPosition().getName(),stock.getPosition().getImage(),
+                    stock.getPosition().getProvider().getProviderName(),stock.getPosition().getProvider().getImage(),
+                    stock.getStockQuantity(),stock.getRemainingQuantity(),stock.getPosition().getUnity(),
+                    stock.getBuyingPrice(),stock.getSellingPrice(),stock.getBuyingPrice()*stock.getStockQuantity(),
+                    stock.getSellingPrice()*stock.getStockQuantity(), stock.getInvoiceReception().getDateOfCreation(),
+                    stock.getInvoiceReception().getDateOfValidation(),
+                    stock.getState(),
+                    stock.getPosition().getCategory().getCategoryName(),
+                    stock.getPosition().getSubcategory().getSubcategoryName(),
+                    stock.getInvoiceReception().getId())
+        ).collect(Collectors.toList());
+        return stockCardDTOS;
+    }
 }

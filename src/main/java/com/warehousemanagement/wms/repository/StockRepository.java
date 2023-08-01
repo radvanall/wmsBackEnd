@@ -45,4 +45,6 @@ public interface StockRepository extends JpaRepository<Stock,Integer> {
                                           @Param("maxQuantity") Integer maxQuantity,
                                           @Param("minQuantity") Integer minQuantity,
                                           Pageable pageable);
+     @Query("SELECT s FROM Stock s  WHERE s.position.id=:id" )
+    List<Stock> findStocksByPositionId(@Param("id") Integer id);
 }
