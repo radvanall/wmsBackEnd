@@ -136,7 +136,7 @@ public class PositionService {
                 ,position.getUnity(), position.getStocks().stream()
                         .filter(stock -> "forSale".equals(stock.getState()) || "inSale".equals(stock.getState()))
                         .map(item->new StockForSale(item.getId(),position.getId(),item.getSellingPrice(),
-                                item.getRemainingQuantity(),item.getState())).collect(Collectors.toList()))))
+                                item.getRemainingQuantity(),item.getState(),item.getInvoiceReception().getDateOfValidation())).collect(Collectors.toList()))))
                 .collect(Collectors.toList());
         return positionForSaleDTOS;
 
