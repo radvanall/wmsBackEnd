@@ -1,5 +1,6 @@
 package com.warehousemanagement.wms.services;
 
+import com.warehousemanagement.wms.dto.CustomerInvoiceDTO;
 import com.warehousemanagement.wms.model.Administrator;
 import com.warehousemanagement.wms.model.Customer;
 import com.warehousemanagement.wms.repository.CustomerRepository;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
@@ -27,4 +29,12 @@ public class CustomerService {
         customerRepository.save(getCustomer);
     }
 
+    public List<CustomerInvoiceDTO> getCustomerInvoice() {
+       List<Customer> customers=customerRepository.findAll();
+       List<CustomerInvoiceDTO> customerInvoiceDTOS=customers.stream().map(customer ->
+               new CustomerInvoiceDTO(customer.getId(),customer.getNickname()
+                       ,customer.getAddress(),customer.getAvatar())).collect(Collectors.toList());
+       return customerInvoiceDTOS;
+
+    }
 }

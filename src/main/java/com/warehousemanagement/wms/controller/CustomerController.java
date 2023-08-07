@@ -1,5 +1,6 @@
 package com.warehousemanagement.wms.controller;
 
+import com.warehousemanagement.wms.dto.CustomerInvoiceDTO;
 import com.warehousemanagement.wms.model.Category;
 import com.warehousemanagement.wms.model.Customer;
 import com.warehousemanagement.wms.model.Operator;
@@ -23,6 +24,11 @@ public class CustomerController {
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
     public List<Customer> getAllCustomer(){
         return customerService.getCustomers();
+    }
+    @RequestMapping(method = RequestMethod.GET, value="/readCustomerInvoice")
+    public List<CustomerInvoiceDTO> getAllCustomerInvoice(){
+
+        return customerService.getCustomerInvoice();
     }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
     public Customer getCustomer(@PathVariable Integer id){
