@@ -1,9 +1,12 @@
 package com.warehousemanagement.wms.controller;
 
+import com.warehousemanagement.wms.dto.InvoiceDTO;
 import com.warehousemanagement.wms.model.Invoice;
 import com.warehousemanagement.wms.model.Operator;
 import com.warehousemanagement.wms.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +17,10 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
     @RequestMapping(method = RequestMethod.POST, value="/create")
-    public void addInvoice(@RequestBody List<Invoice> invoicesList){
-        invoiceService.setInvoice(invoicesList);
+    public ResponseEntity<String> addInvoice(@RequestBody InvoiceDTO invoicesList){
+      return  invoiceService.setInvoice(invoicesList);
    }
+
 
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
     public List<Invoice> getAllInvoice(){
