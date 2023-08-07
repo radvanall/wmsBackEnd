@@ -18,8 +18,10 @@ public class Operator {
     private String name;
     private String surname;
     private String status;
-    @OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
-    @JoinColumn(name="operator_id",referencedColumnName ="id")
+    @OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.DETACH,
+            CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},
+             mappedBy = "operator")
+//    @JoinColumn(name="operator_id",referencedColumnName ="id")
     private List<Invoice> invoices;
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="operator_id", referencedColumnName ="id" )
