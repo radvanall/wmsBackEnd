@@ -1,5 +1,7 @@
 package com.warehousemanagement.wms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,12 +12,18 @@ public class Order {
     private Integer id;
     private Integer quantity;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="stock_id",referencedColumnName = "id")
+    private Stock stock;
+
 
     public Order() {
     }
 
-    public Order(Integer quantity) {
+    public Order(Integer quantity, Stock stock) {
         this.quantity = quantity;
+        this.stock = stock;
     }
 
     public Integer getId() {
@@ -34,7 +42,13 @@ public class Order {
         this.quantity = quantity;
     }
 
+    public Stock getStock() {
+        return stock;
+    }
 
+    public void setStock(Stock stock) {
+        this.stock = stock;
+    }
 
     public void copyOrder(Order order) {
         this.quantity=order.quantity;

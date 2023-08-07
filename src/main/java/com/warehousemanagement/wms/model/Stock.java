@@ -19,8 +19,8 @@ public class Stock {
     private Double sellingPrice;
     private String state;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-    @JoinColumn(name = "stock_id",referencedColumnName = "id")
+    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL} ,mappedBy="stock")
+//    @JoinColumn(name = "stock_id",referencedColumnName = "id")
     private List<Order> order;
 
     @ManyToOne(fetch = FetchType.EAGER)

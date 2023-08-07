@@ -1,6 +1,8 @@
 package com.warehousemanagement.wms.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -17,8 +19,10 @@ public class Customer {
     private String email;
     private Integer phone;
     private String address;
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="customer_id",referencedColumnName ="id")
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.DETACH,
+            CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},mappedBy = "customer")
+//    @JoinColumn(name="customer_id",referencedColumnName ="id")
     private List<Invoice> invoices;
 
     public Customer() {

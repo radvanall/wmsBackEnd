@@ -1,5 +1,7 @@
 package com.warehousemanagement.wms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -14,21 +16,31 @@ public class Invoice {
     private Date date;
     private Boolean shipped;
     private String address;
-    private Long totalPrice;
+    private Double totalPrice;
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="invoice_id",referencedColumnName ="id")
     private List<Order> order;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="customer_id",referencedColumnName = "id")
+    private Customer customer;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="operator_id",referencedColumnName = "id")
+    private Operator operator;
 
     public Invoice() {
         this.date = new Date(System.currentTimeMillis());
     }
 
-    public Invoice( String address, List<Order> order,Long totalPrice,Boolean shipped) {
-        this.date = new Date(System.currentTimeMillis());
+    public Invoice( String address, List<Order> order,Double totalPrice,Boolean shipped,Operator operator,Date date,Customer customer) {
+        this.date = date;
         this.address = address;
         this.order = order;
         this.totalPrice=totalPrice;
         this.shipped=shipped;
+        this.operator=operator;
+        this.customer=customer;
     }
 
     public Integer getId() {
@@ -72,12 +84,20 @@ public class Invoice {
 
     }
 
-    public Long getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Long totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Operator operator) {
+        this.operator = operator;
     }
 
     public void copyInvoice(Invoice invoice) {
@@ -86,6 +106,14 @@ public class Invoice {
         this.order = invoice.order;
         this.totalPrice=invoice.totalPrice;
         this.shipped=invoice.shipped;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     @Override
