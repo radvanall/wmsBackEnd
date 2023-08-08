@@ -2,6 +2,7 @@ package com.warehousemanagement.wms.services;
 
 import com.warehousemanagement.wms.dto.InvoiceDTO;
 import com.warehousemanagement.wms.dto.InvoiceTableDTO;
+import com.warehousemanagement.wms.dto.InvoiceTableDataDTO;
 import com.warehousemanagement.wms.model.*;
 import com.warehousemanagement.wms.repository.*;
 import org.aspectj.weaver.ast.Or;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceService {
@@ -95,7 +97,18 @@ public class InvoiceService {
     }
 
 
-    public List<Invoice> getInvoices() {return invoiceRepository.findAll();
+    public List<InvoiceTableDataDTO> getInvoices() {
+        List<Invoice> invoices=invoiceRepository.findAll();
+//        if(invoices.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nu exista facturi.");
+//        }
+        List<InvoiceTableDataDTO> invoiceTableDataDTOS=invoices.stream().map(invoice ->
+                new InvoiceTableDataDTO(invoice.getId(),invoice.getCustomer().getAvatar(),
+                       invoice.getCustomer().getNickname(), invoice.getDate(),
+                        invoice.getOperator().getNickname(),invoice.getTotalPrice(),invoice.getShipped()))
+                .collect(Collectors.toList());
+
+        return invoiceTableDataDTOS;
     }
 
     public Invoice getInvoice(Integer id) {return invoiceRepository.findById(id).get();

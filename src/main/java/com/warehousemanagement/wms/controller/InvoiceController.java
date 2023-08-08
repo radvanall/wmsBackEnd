@@ -1,6 +1,7 @@
 package com.warehousemanagement.wms.controller;
 
 import com.warehousemanagement.wms.dto.InvoiceDTO;
+import com.warehousemanagement.wms.dto.InvoiceTableDataDTO;
 import com.warehousemanagement.wms.model.Invoice;
 import com.warehousemanagement.wms.model.Operator;
 import com.warehousemanagement.wms.services.InvoiceService;
@@ -23,7 +24,7 @@ public class InvoiceController {
 
 
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
-    public List<Invoice> getAllInvoice(){
+    public List<InvoiceTableDataDTO> getAllInvoice(){
         return invoiceService.getInvoices();
     }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
