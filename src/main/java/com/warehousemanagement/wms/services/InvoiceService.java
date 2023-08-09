@@ -1,17 +1,13 @@
 package com.warehousemanagement.wms.services;
 
-import com.warehousemanagement.wms.dto.InvoiceDTO;
-import com.warehousemanagement.wms.dto.InvoiceTableDTO;
-import com.warehousemanagement.wms.dto.InvoiceTableDataDTO;
+import com.warehousemanagement.wms.dto.*;
 import com.warehousemanagement.wms.model.*;
 import com.warehousemanagement.wms.repository.*;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +39,8 @@ public class InvoiceService {
         List<Order> orders=new ArrayList<>();
         List<String> errors=new ArrayList<>();
         Double totalPrice=0.0;
+        Invoice invoice=new Invoice();
+        invoiceRepository.save(invoice);
         for (InvoiceTableDTO invoiceTableDTO : invoicesList.getInvoiceTableDTOS()){
            Stock stock=stockRepository.findById(invoiceTableDTO.getStockId()).get();
            if(stock.getRemainingQuantity()>=invoiceTableDTO.getQuantity()){
@@ -50,7 +48,7 @@ public class InvoiceService {
                    stock.setRemainingQuantity(stock.getRemainingQuantity()-invoiceTableDTO.getQuantity());
                    if (stock.getRemainingQuantity()==0) {
                        stock.setState("soldOut");}
-                       orders.add(new Order(invoiceTableDTO.getQuantity(),stock));
+                       orders.add(new Order(invoiceTableDTO.getQuantity(),stock,invoice));
                        totalPrice+=invoiceTableDTO.getQuantity()*stock.getSellingPrice();
                        System.out.println("totalPrice:"+totalPrice);
 
@@ -59,7 +57,7 @@ public class InvoiceService {
                    if (stock.getRemainingQuantity()==0) {
                        stock.setState("soldOut");
                    }else stock.setState("inSale");
-                       orders.add(new Order(invoiceTableDTO.getQuantity(),stock));
+                       orders.add(new Order(invoiceTableDTO.getQuantity(),stock,invoice));
                        totalPrice+=invoiceTableDTO.getQuantity()*stock.getSellingPrice();
                        System.out.println("totalPrice:"+totalPrice);
 
@@ -84,9 +82,15 @@ public class InvoiceService {
                 stockRepository.save(order.getStock());
                 orderRepository.save(order);
             });
-
-            Invoice invoice = new Invoice(invoicesList.getAddress(), orders,
-                    totalPrice, invoicesList.getShipped(), operator,invoicesList.getDate(),customer);
+             invoice.setAddress(invoicesList.getAddress());
+             invoice.setTotalPrice(totalPrice);
+             invoice.setShipped(invoicesList.getShipped());
+             invoice.setOrder(orders);
+             invoice.setCustomer(customer);
+             invoice.setOperator(operator);
+             invoice.setDate(invoicesList.getDate());
+//            Invoice invoice = new Invoice(invoicesList.getAddress(), orders,
+//                    totalPrice, invoicesList.getShipped(), operator,invoicesList.getDate(),customer);
             invoiceRepository.save(invoice);
             System.out.println("Invoice:"+invoice.toString());
             System.out.println("invoice:"+invoice);
@@ -111,7 +115,22 @@ public class InvoiceService {
         return invoiceTableDataDTOS;
     }
 
-    public Invoice getInvoice(Integer id) {return invoiceRepository.findById(id).get();
+    public SingleInvoiceDTO getInvoice(Integer id) {
+        Invoice invoice=invoiceRepository.findById(id).get();
+        SingleInvoiceDTO singleInvoiceDTO=new SingleInvoiceDTO(invoice.getId(),invoice.getOperator().getNickname(),
+                invoice.getCustomer().getNickname(),invoice.getCustomer().getAvatar(),
+                invoice.getShipped(),invoice.getAddress(),invoice.getDate(),invoice.getTotalPrice(),
+                invoice.getOrder().stream().map(order -> {
+                    Double totalPrice=order.getQuantity()*order.getStock().getSellingPrice();
+                    return new OrderDTO(order.getId(),order.getStock().getId(),
+                            order.getStock().getPosition().getId(),
+                            order.getStock().getPosition().getName(),
+                            order.getStock().getPosition().getImage(),
+                            order.getQuantity(),order.getStock().getSellingPrice(),
+                            totalPrice,order.getStock().getPosition().getUnity());
+                }).collect(Collectors.toList()));
+
+        return singleInvoiceDTO;
     }
 
     public void updateInvoice(Invoice invoice, Integer id) {
@@ -125,4 +144,27 @@ public class InvoiceService {
     }
 
 
+    public ResponseEntity<String> deleteOrder(Integer id) {
+        try {
+            Order order = orderRepository.findById(id).get();
+            Stock stock = order.getStock();
+            Invoice invoice = order.getInvoice();
+            stock.setRemainingQuantity(order.getQuantity() + stock.getRemainingQuantity());
+            if (stock.getRemainingQuantity() == stock.getStockQuantity()) {
+                stock.setState("forSale");
+            } else stock.setState("inSale");
+            Double newTotalPrice = invoice.getTotalPrice() - (Double.valueOf(order.getQuantity()) *
+                    order.getStock().getSellingPrice());
+            invoice.setTotalPrice(newTotalPrice);
+            System.out.println(order.getId());
+            System.out.println(invoice.getId());
+            System.out.println(stock.getId());
+            invoiceRepository.save(invoice);
+            stockRepository.save(stock);
+            orderRepository.delete(order);
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+        }
+        return ResponseEntity.ok("Produsul a fost șters");
+    }
 }

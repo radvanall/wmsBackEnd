@@ -2,6 +2,7 @@ package com.warehousemanagement.wms.controller;
 
 import com.warehousemanagement.wms.dto.InvoiceDTO;
 import com.warehousemanagement.wms.dto.InvoiceTableDataDTO;
+import com.warehousemanagement.wms.dto.SingleInvoiceDTO;
 import com.warehousemanagement.wms.model.Invoice;
 import com.warehousemanagement.wms.model.Operator;
 import com.warehousemanagement.wms.services.InvoiceService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/invoice")
@@ -28,7 +30,7 @@ public class InvoiceController {
         return invoiceService.getInvoices();
     }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
-    public Invoice getInvoice(@PathVariable Integer id){
+    public SingleInvoiceDTO getInvoice(@PathVariable Integer id){
         return invoiceService.getInvoice(id);
     }
     @RequestMapping(method = RequestMethod.PUT, value="/update/{id}")
@@ -39,6 +41,11 @@ public class InvoiceController {
     @RequestMapping(method = RequestMethod.DELETE, value="/delete/{id}")
     public void deleteInvoice( @PathVariable Integer id){
         invoiceService.deleteInvoice(id);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value="/deleteOrder/{id}")
+    public ResponseEntity<String> deleteOrder (@PathVariable Integer id){
+        return invoiceService.deleteOrder(id);
     }
 //    @RequestMapping(method = RequestMethod.POST, value="/createInvoice/{operatorId}")
 //    public void addInvoice(@RequestBody List<Invoice> invoicesList){
