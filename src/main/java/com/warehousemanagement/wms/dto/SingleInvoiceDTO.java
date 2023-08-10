@@ -8,6 +8,7 @@ public class SingleInvoiceDTO {
     private String operatorName;
     private String clientName;
     private String image;
+    private String clientAddress;
     private String address;
     private Boolean shipped;
     private Date date;
@@ -21,6 +22,7 @@ public class SingleInvoiceDTO {
                             String operatorName,
                             String clientName,
                             String image,
+                            String clientAddress,
                             Boolean shipped,
                             String address,
                             Date date,
@@ -30,6 +32,7 @@ public class SingleInvoiceDTO {
         this.operatorName = operatorName;
         this.clientName=clientName;
         this.image=image;
+        this.clientAddress=clientAddress;
         this.shipped = shipped;
         this.address=address;
         this.date = date;
@@ -107,5 +110,13 @@ public class SingleInvoiceDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getClientAddress() {
+        return clientAddress;
+    }
+
+    public void setClientAddress(String clientAddress) {
+        this.clientAddress = clientAddress;
     }
 }
