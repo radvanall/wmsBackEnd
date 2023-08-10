@@ -19,7 +19,8 @@ public class Invoice {
     private Double totalPrice;
 //    @OneToMany(fetch = FetchType.LAZY)
 //    @JoinColumn(name="invoice_id",referencedColumnName ="id")
-    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL} ,mappedBy="invoice")
+//    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL} ,mappedBy="invoice")
+@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE}, mappedBy="invoice")
     private List<Order> order;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="customer_id",referencedColumnName = "id")

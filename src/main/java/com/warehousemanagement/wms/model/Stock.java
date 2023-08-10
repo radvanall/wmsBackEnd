@@ -19,7 +19,7 @@ public class Stock {
     private Double sellingPrice;
     private String state;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL} ,mappedBy="stock")
+    @OneToMany(fetch = FetchType.LAZY ,mappedBy="stock")
 //    @JoinColumn(name = "stock_id",referencedColumnName = "id")
     private List<Order> order;
 
