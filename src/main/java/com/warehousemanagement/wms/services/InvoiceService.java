@@ -119,6 +119,7 @@ public class InvoiceService {
         Invoice invoice=invoiceRepository.findById(id).get();
         SingleInvoiceDTO singleInvoiceDTO=new SingleInvoiceDTO(invoice.getId(),invoice.getOperator().getNickname(),
                 invoice.getCustomer().getNickname(),invoice.getCustomer().getAvatar(),
+                invoice.getCustomer().getAddress(),
                 invoice.getShipped(),invoice.getAddress(),invoice.getDate(),invoice.getTotalPrice(),
                 invoice.getOrder().stream().map(order -> {
                     Double totalPrice=order.getQuantity()*order.getStock().getSellingPrice();
@@ -147,24 +148,119 @@ public class InvoiceService {
     public ResponseEntity<String> deleteOrder(Integer id) {
         try {
             Order order = orderRepository.findById(id).get();
-            Stock stock = order.getStock();
+//            Stock stock = order.getStock();
+            List<Stock> stocks=new ArrayList<>();
             Invoice invoice = order.getInvoice();
-            stock.setRemainingQuantity(order.getQuantity() + stock.getRemainingQuantity());
-            if (stock.getRemainingQuantity() == stock.getStockQuantity()) {
-                stock.setState("forSale");
-            } else stock.setState("inSale");
-            Double newTotalPrice = invoice.getTotalPrice() - (Double.valueOf(order.getQuantity()) *
-                    order.getStock().getSellingPrice());
-            invoice.setTotalPrice(newTotalPrice);
-            System.out.println(order.getId());
-            System.out.println(invoice.getId());
-            System.out.println(stock.getId());
+            List<Order> ordersToDelete=new ArrayList<>();
+            invoice.getOrder().forEach(invoiceOrder->{
+                if(invoiceOrder.getStock().getPosition().getId()==order.getStock().getPosition().getId() &&
+                        invoiceOrder.getId()>=order.getId()) ordersToDelete.add(invoiceOrder);
+            });
+            ordersToDelete.forEach(orderToDelete->{
+                Stock stockToChange=orderToDelete.getStock();
+                stockToChange.setRemainingQuantity(orderToDelete.getQuantity()+
+                        stockToChange.getRemainingQuantity());
+                if (stockToChange.getRemainingQuantity() == stockToChange.getStockQuantity()) {
+                    stockToChange.setState("forSale");
+                } else stockToChange.setState("inSale");
+                stocks.add(stockToChange);
+                invoice.setTotalPrice(invoice.getTotalPrice()-(stockToChange.getSellingPrice()*
+                        Double.valueOf(orderToDelete.getQuantity())));
+            });
             invoiceRepository.save(invoice);
-            stockRepository.save(stock);
-            orderRepository.delete(order);
+            stocks.forEach(stock->{
+                stockRepository.save(stock);
+                System.out.println("sTOKS:"+ stock.toString());
+
+            });
+            ordersToDelete.forEach(orderToDelete->{
+                orderRepository.delete(orderToDelete);
+               System.out.println("Orders:"+ orderToDelete.toString());
+            });
+
+//            stock.setRemainingQuantity(order.getQuantity() + stock.getRemainingQuantity());
+//            if (stock.getRemainingQuantity() == stock.getStockQuantity()) {
+//                stock.setState("forSale");
+//            } else stock.setState("inSale");
+//            Double newTotalPrice = invoice.getTotalPrice() - (Double.valueOf(order.getQuantity()) *
+//                    order.getStock().getSellingPrice());
+//            invoice.setTotalPrice(newTotalPrice);
+//            System.out.println(order.getId());
+//            System.out.println(invoice.getId());
+//            System.out.println(stock.getId());
+
+//            invoiceRepository.save(invoice);
+//            stockRepository.save(stock);
+//            orderRepository.delete(order);
         }  catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
         return ResponseEntity.ok("Produsul a fost șters");
+    }
+
+    public ResponseEntity<String> addNewOrders(List<NewOrderDTO> newOrderDTOS) {
+        try {
+        if(newOrderDTOS.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nu a-ți introdus nici un produs.");
+        newOrderDTOS.forEach(order->System.out.println("Order:"+order.toString()));
+        Invoice invoice=invoiceRepository.findById(newOrderDTOS.get(0).getInvoiceId()).get();
+        List<Stock> stocks=new ArrayList<>();
+        List <Order> currentInvoiceOrders=invoice.getOrder();
+        List <Order> newOrders=new ArrayList<>();
+        Double totalPrice=0.0;
+        for (NewOrderDTO orderDTO : newOrderDTOS){
+            Boolean isPresent=false;
+              for(Order order:currentInvoiceOrders) {
+                  if(order.getStock().getId()==orderDTO.getStockId()){
+                      if(order.getStock().getRemainingQuantity()>=orderDTO.getQuantity()){
+                          totalPrice+=orderDTO.getQuantity()*order.getStock().getSellingPrice();
+//                          Stock stock =order.getStock();
+//                          stock.setRemainingQuantity(stock.getRemainingQuantity()-orderDTO.getQuantity());
+                          order.getStock().setRemainingQuantity(order.getStock().getRemainingQuantity()-orderDTO.getQuantity());
+                          if(order.getStock().getRemainingQuantity()==0) order.getStock().setState("soldOut");
+                          order.setQuantity(order.getQuantity()+orderDTO.getQuantity());
+                          isPresent=true;
+                          break;
+                      }else  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nu există suficiente bucăți în stocul-"+
+                              order.getStock().getPosition().getName());
+                  }
+              }
+              if(!isPresent){
+                  Stock stock=stockRepository.findById(orderDTO.getStockId()).get();
+                  if (stock.getRemainingQuantity()<orderDTO.getQuantity())
+                      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nu există suficiente bucăți în stocul-"+
+                          stock.getPosition().getName());
+                  stock.setRemainingQuantity(stock.getRemainingQuantity()-orderDTO.getQuantity());
+                  if(stock.getRemainingQuantity()==0) stock.setState("soldOut");
+                  Order newOrder=new Order(orderDTO.getQuantity(),stock,invoice);
+                  stocks.add(stock);
+                  newOrders.add(newOrder);
+                  totalPrice+=orderDTO.getQuantity()*stock.getSellingPrice();
+              }
+        }
+        invoice.setTotalPrice(invoice.getTotalPrice()+totalPrice);
+        stocks.forEach(stock ->
+            stockRepository.save(stock)
+        );
+        newOrders.forEach(order -> orderRepository.save(order));
+        invoiceRepository.save(invoice);
+        return ResponseEntity.ok("Datele  au fost adaugate");
+    }  catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+    }
+    }
+
+    public ResponseEntity<String> changeAddress(Integer id, String newAddress) {
+        try {
+            System.out.println("id:" + id);
+            System.out.println("newAddress:" + newAddress);
+            Invoice invoice = invoiceRepository.findById(id).get();
+            invoice.setAddress(newAddress);
+            invoiceRepository.save(invoice);
+            return ResponseEntity.ok("Adresa a fost modificata");
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+        }
+
     }
 }

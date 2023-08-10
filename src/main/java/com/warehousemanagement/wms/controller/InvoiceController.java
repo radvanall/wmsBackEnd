@@ -2,6 +2,7 @@ package com.warehousemanagement.wms.controller;
 
 import com.warehousemanagement.wms.dto.InvoiceDTO;
 import com.warehousemanagement.wms.dto.InvoiceTableDataDTO;
+import com.warehousemanagement.wms.dto.NewOrderDTO;
 import com.warehousemanagement.wms.dto.SingleInvoiceDTO;
 import com.warehousemanagement.wms.model.Invoice;
 import com.warehousemanagement.wms.model.Operator;
@@ -23,6 +24,16 @@ public class InvoiceController {
     public ResponseEntity<String> addInvoice(@RequestBody InvoiceDTO invoicesList){
       return  invoiceService.setInvoice(invoicesList);
    }
+    @RequestMapping(method = RequestMethod.POST, value="/addOrders")
+    public ResponseEntity<String> addNewOrders(@RequestBody List<NewOrderDTO> newOrderDTOS){
+        return  invoiceService.addNewOrders(newOrderDTOS);
+    }
+    @RequestMapping(method = RequestMethod.POST, value="/changeAddress/{id}")
+    public ResponseEntity<String> changeAddress(@RequestBody Map<String, String> requestData, @PathVariable Integer id) {
+        String newAddress = requestData.get("newAddress");
+        return  invoiceService.changeAddress(id,newAddress);
+    }
+
 
 
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
