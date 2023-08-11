@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,8 +141,25 @@ public class InvoiceService {
         invoiceRepository.save(getInvoice);
     }
 
-    public void deleteInvoice(Integer id) {
-        invoiceRepository.deleteById(id);
+    public ResponseEntity<String>  deleteInvoice(Integer id) {
+        System.out.println(id);
+        try {
+            Optional<Invoice> optionalInvoice=invoiceRepository.findById(id);
+            if(!optionalInvoice.isPresent())
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Factura nu a fost găsită");
+            Invoice invoice=optionalInvoice.get();
+            invoice.getOrder().forEach(order -> {
+                Stock stock=order.getStock();
+                stock.setRemainingQuantity(order.getQuantity()+stock.getRemainingQuantity());
+                stockRepository.save(stock);
+            });
+            invoiceRepository.delete(invoice);
+            return ResponseEntity.ok("Factura a fost ștearsă cu succes");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+        }
+
+        //        invoiceRepository.deleteById(id);
     }
 
 
@@ -262,5 +280,20 @@ public class InvoiceService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
 
+    }
+
+    public ResponseEntity<String> validateInvoice(Integer id) {
+        try{
+            Optional<Invoice> optionalInvoice=invoiceRepository.findById(id);
+            if(!optionalInvoice.isPresent()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Factura nu a fost găsită");
+            }
+            Invoice invoice=optionalInvoice.get();
+            invoice.setShipped(true);
+            invoiceRepository.save(invoice);
+            return ResponseEntity.ok("Factura a fost modificată");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+        }
     }
 }

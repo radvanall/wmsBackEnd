@@ -33,6 +33,11 @@ public class InvoiceController {
         String newAddress = requestData.get("newAddress");
         return  invoiceService.changeAddress(id,newAddress);
     }
+    @RequestMapping(method = RequestMethod.POST, value="/validateInvoice")
+    public ResponseEntity<String> validateInvoice(@RequestBody Map<String, Integer> request){
+        Integer id=request.get("id");
+        return invoiceService.validateInvoice(id);
+    }
 
 
 
@@ -49,9 +54,10 @@ public class InvoiceController {
         invoiceService.updateInvoice(invoice,id);
 
     }
-    @RequestMapping(method = RequestMethod.DELETE, value="/delete/{id}")
-    public void deleteInvoice( @PathVariable Integer id){
-        invoiceService.deleteInvoice(id);
+    @RequestMapping(method = RequestMethod.PUT, value="/delete/{id}")
+    public ResponseEntity<String> deleteInvoice( @PathVariable Integer id){
+
+       return invoiceService.deleteInvoice(id);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value="/deleteOrder/{id}")
