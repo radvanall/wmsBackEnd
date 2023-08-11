@@ -14,11 +14,13 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nickname;
+    @JsonIgnore
     private String password;
     private String avatar;
     private String email;
     private Integer phone;
     private String address;
+    private Boolean active;
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.DETACH,
             CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},mappedBy = "customer")
@@ -28,7 +30,15 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(String nickname, String password, String avatar, String email, Integer phone, String address,List<Invoice> invoices) {
+    public Customer(String nickname, String avatar, String email, Integer phone, String address) {
+        this.nickname = nickname;
+        this.avatar = avatar;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+    }
+
+    public Customer(String nickname, String password, String avatar, String email, Integer phone, String address, List<Invoice> invoices) {
         this.nickname = nickname;
         this.password = password;
         this.avatar = avatar;
@@ -36,6 +46,15 @@ public class Customer {
         this.phone = phone;
         this.address = address;
         this.invoices = invoices;
+    }
+
+    public Customer(String nickname, String avatar, String email, Integer phone, String address, Boolean active) {
+        this.nickname = nickname;
+        this.avatar = avatar;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.active = active;
     }
 
     public Integer getId() {
@@ -100,6 +119,14 @@ public class Customer {
 
     public void setOrder(List<Invoice> invoices) {
         this.invoices = invoices;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public void copyCustomer(Customer customer){

@@ -1,6 +1,7 @@
 package com.warehousemanagement.wms.controller;
 
 import com.warehousemanagement.wms.dto.CustomerInvoiceDTO;
+import com.warehousemanagement.wms.dto.SingleCustomerDTO;
 import com.warehousemanagement.wms.model.Category;
 import com.warehousemanagement.wms.model.Customer;
 import com.warehousemanagement.wms.model.Operator;
@@ -8,8 +9,12 @@ import com.warehousemanagement.wms.services.CategoryService;
 import com.warehousemanagement.wms.services.CustomerService;
 import com.warehousemanagement.wms.services.OperatorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,8 +23,15 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
     @RequestMapping(method = RequestMethod.POST, value="/create")
-    public void addCustomer(@RequestBody List<Customer> operatorsList){
-        customerService.setCustomer(operatorsList);
+    public ResponseEntity<?> addCustomer(@RequestParam("nickname")String nickname,
+                                         @RequestParam("email")String email,
+                                         @RequestParam("phone")Integer phone,
+                                         @RequestParam("imgName")String imgName,
+                                         @RequestParam("address")String address,
+                                         @RequestParam("image") MultipartFile file) throws IOException {
+        String response= customerService.addCustomer(nickname,email,phone,imgName,address,file);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
     public List<Customer> getAllCustomer(){
@@ -31,7 +43,7 @@ public class CustomerController {
         return customerService.getCustomerInvoice();
     }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
-    public Customer getCustomer(@PathVariable Integer id){
+    public SingleCustomerDTO getCustomer(@PathVariable Integer id){
         return customerService.getCustomer(id);
 
     }
