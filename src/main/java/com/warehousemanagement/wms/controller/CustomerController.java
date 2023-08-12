@@ -47,9 +47,16 @@ public class CustomerController {
         return customerService.getCustomer(id);
 
     }
-    @RequestMapping(method = RequestMethod.PUT, value="/update/{id}")
-    public void updateCustomer(@RequestBody Customer operator, @PathVariable Integer id){
-        customerService.updateCustomer(operator,id);
-
+    @RequestMapping(method = RequestMethod.POST, value="/update/{id}")
+    public ResponseEntity<?> updateCustomer(@PathVariable Integer id,
+                                            @RequestParam("nickname")String nickname,
+                                            @RequestParam("email")String email,
+                                            @RequestParam("phone")Integer phone,
+                                            @RequestParam("imgName")String imgName,
+                                            @RequestParam("address")String address,
+                                            @RequestParam("image") MultipartFile file) throws IOException {
+        String response=  customerService.updateCustomer(id,nickname,email,phone,imgName,address,file);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
 }
