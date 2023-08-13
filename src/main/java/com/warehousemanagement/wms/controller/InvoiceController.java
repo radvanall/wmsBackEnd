@@ -1,9 +1,6 @@
 package com.warehousemanagement.wms.controller;
 
-import com.warehousemanagement.wms.dto.InvoiceDTO;
-import com.warehousemanagement.wms.dto.InvoiceTableDataDTO;
-import com.warehousemanagement.wms.dto.NewOrderDTO;
-import com.warehousemanagement.wms.dto.SingleInvoiceDTO;
+import com.warehousemanagement.wms.dto.*;
 import com.warehousemanagement.wms.model.Invoice;
 import com.warehousemanagement.wms.model.Operator;
 import com.warehousemanagement.wms.services.InvoiceService;
@@ -64,9 +61,9 @@ public class InvoiceController {
     public ResponseEntity<String> deleteOrder (@PathVariable Integer id){
         return invoiceService.deleteOrder(id);
     }
-//    @RequestMapping(method = RequestMethod.POST, value="/createInvoice/{operatorId}")
-//    public void addInvoice(@RequestBody List<Invoice> invoicesList){
-//        invoiceService.setInvoice(invoicesList);
-//    }
+    @RequestMapping(method = RequestMethod.GET,value="/getWeeklySales/{id}")
+    public List<WeeklySalesDTO> getWeeklySales(@PathVariable Integer id){
+        return invoiceService.getWeeklySales(id);
+    }
 
 }

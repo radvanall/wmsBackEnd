@@ -8,9 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -295,5 +294,14 @@ public class InvoiceService {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
+    }
+
+    public List<WeeklySalesDTO> getWeeklySales(Integer id) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MONTH, -3);
+        Date threeMonthsAgo = calendar.getTime();
+        List<WeeklySalesDTO> weeklySalesDTOS=invoiceRepository.getWeeklySales(threeMonthsAgo);
+        return  weeklySalesDTOS;
     }
 }
