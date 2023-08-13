@@ -59,4 +59,11 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
+    @RequestMapping(method = RequestMethod.PUT, value="/delete/{id}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable Integer id)
+    {
+        String response=customerService.deleteCustomer(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
 }

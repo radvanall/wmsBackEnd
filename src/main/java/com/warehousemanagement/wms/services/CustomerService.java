@@ -150,4 +150,25 @@ public class CustomerService {
         return "An error occurred: " + e.getMessage();
     }
     }
+
+    public String deleteCustomer(Integer id) {
+        try{
+            Optional<Customer> optionalCustomer=customerRepository.findById(id);
+            if(!optionalCustomer.isPresent()) return "Clientul nu a fost gasit.";
+            Customer customer=optionalCustomer.get();
+            String originalImgName=customer.getAvatar().substring(customer.getAvatar().lastIndexOf('/')+1);
+            File fileImg=new File(folder+originalImgName);
+            boolean areEqual= CompareFiles.compareFiles(avatarImage,fileImg);
+            if(!areEqual){
+                if(!fileImg.delete()) return "Probleme la stergera imaginii vechi";
+                customer.setAvatar("/img/clients/avatar.jpg");
+            }
+            customer.setActive(false);
+            customerRepository.save(customer);
+            return "Clientul a fost șters";
+
+        }catch (Exception e) {
+            return "An error occurred: " + e.getMessage();
+        }
+    }
 }
