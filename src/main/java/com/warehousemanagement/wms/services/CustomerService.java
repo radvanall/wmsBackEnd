@@ -1,16 +1,15 @@
 package com.warehousemanagement.wms.services;
 
-import com.sun.org.apache.bcel.internal.generic.IFLE;
 import com.warehousemanagement.wms.dto.CustomerInvoiceDTO;
+import com.warehousemanagement.wms.dto.CustomersSpendingByProduct;
 import com.warehousemanagement.wms.dto.SingleCustomerDTO;
 import com.warehousemanagement.wms.dto.SingleCustomerInvoice;
-import com.warehousemanagement.wms.model.Administrator;
 import com.warehousemanagement.wms.model.Customer;
 import com.warehousemanagement.wms.repository.CustomerRepository;
 import com.warehousemanagement.wms.utils.CompareFiles;
 import com.warehousemanagement.wms.utils.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -170,5 +169,12 @@ public class CustomerService {
         }catch (Exception e) {
             return "An error occurred: " + e.getMessage();
         }
+    }
+
+    public List<CustomersSpendingByProduct> getFavoriteProducts(Integer id) {
+        PageRequest pageable =  PageRequest.of(0, 10);
+        List<CustomersSpendingByProduct> spendingByProducts=customerRepository
+                .getCustomerSpendingByProduct(id,pageable);
+        return spendingByProducts;
     }
 }

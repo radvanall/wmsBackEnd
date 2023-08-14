@@ -1,6 +1,7 @@
 package com.warehousemanagement.wms.controller;
 
 import com.warehousemanagement.wms.dto.CustomerInvoiceDTO;
+import com.warehousemanagement.wms.dto.CustomersSpendingByProduct;
 import com.warehousemanagement.wms.dto.SingleCustomerDTO;
 import com.warehousemanagement.wms.model.Category;
 import com.warehousemanagement.wms.model.Customer;
@@ -66,4 +67,9 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
+    @RequestMapping(method = RequestMethod.GET,value="/getFavoriteProducts/{id}")
+    public List<CustomersSpendingByProduct> getFavoriteProducts(@PathVariable Integer id){
+        return customerService.getFavoriteProducts(id);
+    }
+
 }
