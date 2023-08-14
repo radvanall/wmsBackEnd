@@ -75,10 +75,10 @@ public class InvoiceReceptionService {
                     validatedBy,
                     invoiceReception.getCreatedBy().getNickname(),
                     invoiceReception.getStocks().stream()
-                            .mapToDouble(stock->stock.getBuyingPrice())
+                            .mapToDouble(stock->stock.getBuyingPrice()*stock.getStockQuantity())
                             .sum(),
                     invoiceReception.getStocks().stream()
-                            .mapToDouble(stock -> stock.getSellingPrice())
+                            .mapToDouble(stock -> stock.getSellingPrice()*stock.getStockQuantity())
                             .sum(),
                     invoiceReception.getProvider().getProviderName(),
                     invoiceReception.getProvider().getId(),
@@ -117,10 +117,10 @@ public class InvoiceReceptionService {
                    invoice.getDateOfCreation(),invoice.getDateOfValidation(),
                    validatedBy,invoice.getCreatedBy().getNickname(),
                    invoice.getStocks().stream()
-                           .mapToDouble(stock -> stock.getBuyingPrice())
+                           .mapToDouble(stock -> stock.getBuyingPrice()*stock.getStockQuantity())
                            .sum(),
                    invoice.getStocks().stream()
-                           .mapToDouble(stock -> stock.getSellingPrice())
+                           .mapToDouble(stock -> stock.getSellingPrice()*stock.getStockQuantity())
                            .sum(),
                    invoice.getProvider().getProviderName());
              }).collect(Collectors.toList());
