@@ -61,9 +61,10 @@ public class InvoiceController {
     public ResponseEntity<String> deleteOrder (@PathVariable Integer id){
         return invoiceService.deleteOrder(id);
     }
-    @RequestMapping(method = RequestMethod.GET,value="/getWeeklySales/{id}")
-    public List<WeeklySalesDTO> getWeeklySales(@PathVariable Integer id){
-        return invoiceService.getWeeklySales(id);
+    @RequestMapping(method = RequestMethod.GET,value="/getWeeklySales")
+    public List<WeeklySalesDTO> getWeeklySales(@RequestParam("id") Integer id,
+                                               @RequestParam("period") Integer period){
+        return invoiceService.getWeeklySales(id,period);
     }
 
 }

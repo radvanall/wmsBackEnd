@@ -15,7 +15,9 @@ import java.util.List;
 public interface InvoiceRepository extends JpaRepository<Invoice,Integer> {
 @Query("SELECT NEW com.warehousemanagement.wms.dto.WeeklySalesDTO(date_trunc('week', i.date) AS weekStart, SUM(i.totalPrice) AS totalSales) " +
         "FROM Invoice i WHERE i.date >= :startDate " +
+        "And i.customer.id=:id " +
         "GROUP BY weekStart ORDER BY weekStart")
-    List<WeeklySalesDTO> getWeeklySales(@Param("startDate") Date startDate);
+    List<WeeklySalesDTO> getWeeklySales(@Param("startDate") Date startDate,
+                                        @Param("id") Integer id);
 
 }

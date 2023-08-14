@@ -296,12 +296,12 @@ public class InvoiceService {
         }
     }
 
-    public List<WeeklySalesDTO> getWeeklySales(Integer id) {
+    public List<WeeklySalesDTO> getWeeklySales(Integer id, Integer period ) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.MONTH, -3);
-        Date threeMonthsAgo = calendar.getTime();
-        List<WeeklySalesDTO> weeklySalesDTOS=invoiceRepository.getWeeklySales(threeMonthsAgo);
+        calendar.add(Calendar.MONTH, -period);
+        Date monthsAgo = calendar.getTime();
+        List<WeeklySalesDTO> weeklySalesDTOS=invoiceRepository.getWeeklySales(monthsAgo,id);
         return  weeklySalesDTOS;
     }
 }
