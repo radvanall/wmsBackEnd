@@ -29,4 +29,12 @@ public class WeeklySalesDTO {
     public void setTotalSales(Double totalSales) {
         this.totalSales = totalSales;
     }
+
+    @Override
+    public String toString() {
+        return "WeeklySalesDTO{" +
+                "weekStart=" + weekStart +
+                ", totalSales=" + totalSales +
+                '}';
+    }
 }
