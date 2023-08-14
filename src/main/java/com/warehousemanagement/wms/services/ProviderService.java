@@ -1,11 +1,14 @@
 package com.warehousemanagement.wms.services;
 
+import com.warehousemanagement.wms.dto.SaleAndAcquisitionDTO;
+import com.warehousemanagement.wms.dto.WeeklySalesDTO;
 import com.warehousemanagement.wms.model.Category;
 import com.warehousemanagement.wms.model.Position;
 import com.warehousemanagement.wms.model.Provider;
 import com.warehousemanagement.wms.model.Subcategory;
 import com.warehousemanagement.wms.repository.PositionRepository;
 import com.warehousemanagement.wms.repository.ProviderRepository;
+import com.warehousemanagement.wms.utils.FindSumForDate;
 import com.warehousemanagement.wms.utils.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -122,5 +127,31 @@ public String updateProvider(Integer id,String providerName,
     public String deleteProvider(Integer id) {
         providerRepository.disableProvider(id);
         return  "Furnizorul a fost șters";
+    }
+
+    public List<SaleAndAcquisitionDTO> getBalance(Integer id) {
+        List<SaleAndAcquisitionDTO> saleAndAcquisitionDTOS=new ArrayList<>();
+        List<WeeklySalesDTO> salesDTOS=providerRepository.getWeeklySales(id);
+        List<WeeklySalesDTO> acquisitionsDTOS= providerRepository.getWeeklyAcquisitions(id);
+
+
+        Calendar currentDate = Calendar.getInstance();
+        Calendar monthsAgo = Calendar.getInstance();
+        monthsAgo.add(Calendar.MONTH, -3);
+        while (currentDate.after(monthsAgo)) {
+            Calendar weekStart = (Calendar) currentDate.clone();
+            weekStart.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+            weekStart.set(Calendar.HOUR_OF_DAY, 0);
+            weekStart.set(Calendar.MINUTE, 0);
+            weekStart.set(Calendar.SECOND, 0);
+            Calendar weekEnd = (Calendar) weekStart.clone();
+            weekEnd.add(Calendar.DAY_OF_WEEK, 6);
+            System.out.println("weekStart="+weekStart.getTime());
+            double sumSales = FindSumForDate.findSumForDate(salesDTOS, weekStart.getTime(),weekEnd.getTime());
+            double sumAcquisitions = FindSumForDate.findSumForDate(acquisitionsDTOS, weekStart.getTime(),weekEnd.getTime());
+            saleAndAcquisitionDTOS.add(new SaleAndAcquisitionDTO(weekStart.getTime(),sumSales,sumAcquisitions));
+            currentDate.add(Calendar.WEEK_OF_YEAR, -1);
+        }
+        return saleAndAcquisitionDTOS;
     }
 }

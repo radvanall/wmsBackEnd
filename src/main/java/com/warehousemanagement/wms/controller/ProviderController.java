@@ -1,5 +1,7 @@
 package com.warehousemanagement.wms.controller;
 
+import com.warehousemanagement.wms.dto.SaleAndAcquisitionDTO;
+import com.warehousemanagement.wms.dto.WeeklySalesDTO;
 import com.warehousemanagement.wms.model.Category;
 import com.warehousemanagement.wms.model.Provider;
 import com.warehousemanagement.wms.services.CategoryService;
@@ -72,5 +74,9 @@ public ResponseEntity<?> updateProvider(@PathVariable Integer id,
     @RequestMapping(method = RequestMethod.PUT, value="/addposition/{positionId}/{providerId}")
     public void addPosition(@PathVariable Integer positionId,@PathVariable Integer providerId){
         providerService.addPosition(positionId,providerId);
+    }
+    @RequestMapping(method = RequestMethod.GET,value="/getBalance/{id}")
+    public List<SaleAndAcquisitionDTO> getBalance(@PathVariable Integer id){
+        return providerService.getBalance(id);
     }
 }
