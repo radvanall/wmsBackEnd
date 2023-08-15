@@ -84,6 +84,11 @@ public class PositionController {
         List<PositionForSaleDTO> positionForSaleDTOS=positionService.getPositionsForSale();
         return positionForSaleDTOS;
     }
+    @RequestMapping(method=RequestMethod.GET,value="/getPositionsByOrderId/{id}")
+    public  PositionForSaleDTO getPositionsForSale(@PathVariable Integer id){
+       PositionForSaleDTO positionForSaleDTO=positionService.getPositionByOrderId(id);
+        return positionForSaleDTO;
+    }
     @RequestMapping(method = RequestMethod.GET,value="/readproduct/{id}")
     public ProductDTO getProduct(@PathVariable  Integer id) throws IOException {
 //    public MultipartFile getProduct(@PathVariable  Integer id) throws IOException {

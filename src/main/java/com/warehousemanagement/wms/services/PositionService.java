@@ -4,7 +4,9 @@ import com.warehousemanagement.wms.dto.PositionForSaleDTO;
 import com.warehousemanagement.wms.dto.ProductDTO;
 import com.warehousemanagement.wms.dto.ProductTableDTO;
 import com.warehousemanagement.wms.dto.StockForSale;
+import com.warehousemanagement.wms.model.Order;
 import com.warehousemanagement.wms.model.Position;
+import com.warehousemanagement.wms.repository.OrderRepository;
 import com.warehousemanagement.wms.repository.PositionRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class PositionService {
     String[] imgFormats = {"png", "jpg", "jpeg", "web"};
     @Autowired
     private PositionRepository positionRepository;
+    @Autowired
+    private OrderRepository orderRepository;
     public String setImgName(String imgName){
         String[] imgParts = imgName.split("\\.");
 
@@ -130,7 +134,7 @@ public class PositionService {
     }
 
     public List<PositionForSaleDTO> getPositionsForSale() {
-        List<Position> positions=positionRepository. findPositionsWithSaleStocks();
+        List<Position> positions=positionRepository.findPositionsWithSaleStocks();
         List<PositionForSaleDTO> positionForSaleDTOS = positions.stream().map((position ->
                 new PositionForSaleDTO(position.getId(),position.getName(),position.getImage()
                 ,position.getUnity(), position.getStocks().stream()
@@ -139,6 +143,21 @@ public class PositionService {
                                 item.getRemainingQuantity(),item.getState(),item.getInvoiceReception().getDateOfValidation())).collect(Collectors.toList()))))
                 .collect(Collectors.toList());
         return positionForSaleDTOS;
+
+    }
+    public PositionForSaleDTO getPositionByOrderId(Integer id) {
+        Order order=orderRepository.findById(id).get();
+        Integer stockId=order.getStock().getId();
+       Position position= order.getStock().getPosition();
+        PositionForSaleDTO positionForSaleDTO=
+                new PositionForSaleDTO(position.getId(),position.getName(),position.getImage(),
+                        position.getUnity(),position.getStocks().stream()
+                .filter(stock->"forSale".equals(stock.getState()) || "inSale".equals(stock.getState()) ||
+                        stock.getId()==stockId)
+                .map(item->new StockForSale(item.getId(),position.getId(),item.getSellingPrice(),
+                item.getRemainingQuantity(),item.getState(),item.getInvoiceReception().getDateOfValidation()))
+                        .collect(Collectors.toList()));
+        return positionForSaleDTO;
 
     }
 }
