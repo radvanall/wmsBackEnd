@@ -23,7 +23,7 @@ public class Operator {
              mappedBy = "operator")
 //    @JoinColumn(name="operator_id",referencedColumnName ="id")
     private List<Invoice> invoices;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name="operator_id", referencedColumnName ="id" )
     private List<OperatorWorkDays> operatorWorkDays;
 
