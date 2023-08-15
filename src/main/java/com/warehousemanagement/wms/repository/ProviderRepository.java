@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -29,9 +30,10 @@ public interface ProviderRepository extends JpaRepository<Provider,Integer> {
         "INNER JOIN p.invoiceReceptions i " +
         "INNER JOIN i.stocks s " +
         "WHERE p.id=:id "+
+        "AND i.dateOfCreation>=:startDate "+
         "GROUP BY weekStart " +
         "ORDER BY weekStart ")
-List<WeeklySalesDTO> getWeeklyAcquisitions(@Param("id") Integer id);
+List<WeeklySalesDTO> getWeeklyAcquisitions(@Param("id") Integer id,@Param("startDate") Date startDate);
     @Query("SELECT  NEW com.warehousemanagement.wms.dto.WeeklySalesDTO( " +
             "date_trunc('week',i.date) AS weekStart,SUM(i.totalPrice) AS totalSales) FROM Provider pr " +
             "INNER JOIN pr.positions p " +
@@ -39,7 +41,8 @@ List<WeeklySalesDTO> getWeeklyAcquisitions(@Param("id") Integer id);
             "INNER JOIN s.order o " +
             "INNER JOIN o.invoice i " +
             "WHERE pr.id=:id "+
+            "AND i.date>=:startDate "+
             "GROUP BY weekStart " +
             "ORDER BY weekStart ")
-    List<WeeklySalesDTO> getWeeklySales(@Param("id") Integer id);
+    List<WeeklySalesDTO> getWeeklySales(@Param("id") Integer id,@Param("startDate") Date startDate);
 }

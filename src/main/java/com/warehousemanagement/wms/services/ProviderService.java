@@ -1,11 +1,7 @@
 package com.warehousemanagement.wms.services;
 
-import com.warehousemanagement.wms.dto.SaleAndAcquisitionDTO;
-import com.warehousemanagement.wms.dto.WeeklySalesDTO;
-import com.warehousemanagement.wms.model.Category;
-import com.warehousemanagement.wms.model.Position;
-import com.warehousemanagement.wms.model.Provider;
-import com.warehousemanagement.wms.model.Subcategory;
+import com.warehousemanagement.wms.dto.*;
+import com.warehousemanagement.wms.model.*;
 import com.warehousemanagement.wms.repository.PositionRepository;
 import com.warehousemanagement.wms.repository.ProviderRepository;
 import com.warehousemanagement.wms.utils.FindSumForDate;
@@ -18,9 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProviderService {
@@ -39,8 +34,22 @@ public class ProviderService {
     public List<Provider> getProvidersNameAndId(){
         return providerRepository.getProviderNameAndId();
     }
-    public Provider getProvider(Integer id){
-        return providerRepository.findById(id).get();
+    public ProviderDTO getProvider(Integer id){
+        Provider provider=providerRepository.findById(id).get();
+        ProviderDTO providerDTO=
+                new ProviderDTO(provider.getId(),provider.getProviderName(),
+                        provider.getEmail(),provider.getTel(),
+                        provider.getAddress(),provider.getImage(),
+                        provider.getPositions().stream()
+                                .map(position -> new PositionDTO(position.getId(),position.getName(),
+                                        position.getImage(),position.isActive(),position.getStocks().stream()
+                                        .mapToInt(Stock::getRemainingQuantity).sum())).collect(Collectors.toList()),
+                        provider.getInvoiceReceptions().stream()
+                            .map(invoice->new ProviderPageInvoiceDTO(invoice.getId(),invoice.getDateOfCreation(),
+                                    invoice.getCreatedBy().getNickname(),invoice.getStocks().stream()
+                            .mapToDouble(stock -> stock.getBuyingPrice() * stock.getStockQuantity()).sum(),invoice.getValidated())).collect(Collectors.toList()));
+        return providerDTO;
+        //return providerRepository.findById(id).get();
     }
 //    public void updateProvider(Provider provider,Integer id){
 //        Provider getProvider=providerRepository.findById(id).get();
@@ -129,15 +138,16 @@ public String updateProvider(Integer id,String providerName,
         return  "Furnizorul a fost șters";
     }
 
-    public List<SaleAndAcquisitionDTO> getBalance(Integer id) {
-        List<SaleAndAcquisitionDTO> saleAndAcquisitionDTOS=new ArrayList<>();
-        List<WeeklySalesDTO> salesDTOS=providerRepository.getWeeklySales(id);
-        List<WeeklySalesDTO> acquisitionsDTOS= providerRepository.getWeeklyAcquisitions(id);
-
-
+    public List<SaleAndAcquisitionDTO> getBalance(Integer id,Integer period) {
         Calendar currentDate = Calendar.getInstance();
         Calendar monthsAgo = Calendar.getInstance();
-        monthsAgo.add(Calendar.MONTH, -3);
+        monthsAgo.add(Calendar.MONTH, -period);
+        Date startDate=monthsAgo.getTime();
+        List<SaleAndAcquisitionDTO> saleAndAcquisitionDTOS=new ArrayList<>();
+        List<WeeklySalesDTO> salesDTOS=providerRepository.getWeeklySales(id,startDate);
+        List<WeeklySalesDTO> acquisitionsDTOS= providerRepository.getWeeklyAcquisitions(id,startDate);
+
+
         while (currentDate.after(monthsAgo)) {
             Calendar weekStart = (Calendar) currentDate.clone();
             weekStart.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
