@@ -10,8 +10,15 @@ import java.util.List;
 @NamedNativeQuery(
         name = "Position.getTableProductsDTOList",
         query = "select p.id as id ,p.image as img, p.name as name,c.category_name as categorie,s.subcategory_name as subcategorie," +
-                "pr.provider_name as producator,p.unity as unitate  from work.position p inner join work.provider pr on p.provider_id=pr.id inner join " +
-                "work.subcategory s on p.subcategory_id=s.id inner join work.category c on p.category_id=c.id where p.active=true order by p.id",
+                "pr.provider_name as producator,p.unity as unitate, SUM(st.remaining_quantity) as cantitate  from work.position p inner join work.provider pr on p.provider_id=pr.id inner join " +
+                "work.subcategory s on p.subcategory_id=s.id inner join work.category c on p.category_id=c.id  inner join work.stock st " +
+                "on st.position_id=p.id where p.active=true group by  p.id, " +
+                "    p.image, " +
+                "    p.name, " +
+                "    c.category_name, " +
+                "    s.subcategory_name, " +
+                "    pr.provider_name, " +
+                "    p.unity order by p.id",
         resultSetMapping = "ProductTableDTO"
 )
 
@@ -26,7 +33,8 @@ import java.util.List;
                         @ColumnResult(name="categorie",type=String.class),
                         @ColumnResult(name="subcategorie",type=String.class),
                         @ColumnResult(name="producator",type=String.class),
-                        @ColumnResult(name="unitate",type=String.class)
+                        @ColumnResult(name="unitate",type=String.class),
+                        @ColumnResult(name="cantitate",type=Integer.class)
 
                 }
         )
