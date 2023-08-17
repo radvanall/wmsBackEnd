@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 //@CrossOrigin("*")
@@ -19,8 +21,17 @@ public class OperatorController {
     @Autowired
     private OperatorService operatorService;
     @RequestMapping(method = RequestMethod.POST, value="/create")
-    public void addOperator(@RequestBody List<Operator> operatorsList){
-        operatorService.setOperator(operatorsList);
+    public ResponseEntity<?>  addOperator(@RequestParam("nickname")String nickname,
+                            @RequestParam("name")String name,
+                            @RequestParam("surname")String surname,
+                            @RequestParam("email")String email,
+                            @RequestParam("phone")Integer phone,
+                            @RequestParam("imgName")String imgName,
+                            @RequestParam("address")String address,
+                            @RequestParam("image") MultipartFile file) throws IOException {
+        String response=operatorService.addOperator(nickname,name,surname,email,phone,address,imgName,file);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
     public List<Operator> getAllOperator(){
@@ -38,10 +49,29 @@ public class OperatorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
         }
+    @RequestMapping(method = RequestMethod.GET, value="/getSales")
+    public ResponseEntity<?> getSales(@RequestParam("id") Integer id,
+                                          @RequestParam("period") Integer period ){
+        try {
+            return ResponseEntity.ok(operatorService.getSales(id, period));
+        }catch(RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
-    @RequestMapping(method = RequestMethod.PUT, value="/update/{id}")
-    public void updateOperator(@RequestBody Operator operator, @PathVariable Integer id){
-        operatorService.updateOperator(operator,id);
+    @RequestMapping(method = RequestMethod.POST, value="/update/{id}")
+    public ResponseEntity<?> updateOperator(@PathVariable Integer id,
+            @RequestParam("nickname")String nickname,
+    @RequestParam("name")String name,
+    @RequestParam("surname")String surname,
+    @RequestParam("email")String email,
+    @RequestParam("phone")Integer phone,
+    @RequestParam("imgName")String imgName,
+    @RequestParam("address")String address,
+    @RequestParam("image") MultipartFile file) throws IOException{
+       String response= operatorService.updateOperator(id,nickname,name,surname,email,phone,address,imgName,file);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
     @RequestMapping(method = RequestMethod.PUT, value="/updateInvoices/{operatorId}")
     public void addInvoice(@RequestBody Operator operator, @PathVariable Integer operatorId){
@@ -52,6 +82,14 @@ public class OperatorController {
                                @RequestParam("date") String date,
                                @RequestParam("workedHours") Integer workedHours){
         return  operatorService.setWorkedHours(id,date,workedHours);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value="/delete/{id}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable Integer id)
+    {
+        String response=operatorService.deleteOperator(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
 
 }

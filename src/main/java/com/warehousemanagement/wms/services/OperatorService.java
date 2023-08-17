@@ -1,31 +1,32 @@
 package com.warehousemanagement.wms.services;
 
-import com.warehousemanagement.wms.dto.OperatorInvoiceDTO;
-import com.warehousemanagement.wms.dto.OperatorTableDTO;
-import com.warehousemanagement.wms.dto.SingleOperatorDTO;
-import com.warehousemanagement.wms.dto.WorkDaysDTO;
-import com.warehousemanagement.wms.model.Administrator;
-import com.warehousemanagement.wms.model.Invoice;
-import com.warehousemanagement.wms.model.Operator;
-import com.warehousemanagement.wms.model.OperatorWorkDays;
+import com.warehousemanagement.wms.dto.*;
+import com.warehousemanagement.wms.model.*;
 import com.warehousemanagement.wms.repository.InvoiceRepository;
 import com.warehousemanagement.wms.repository.OperatorRepository;
 import com.warehousemanagement.wms.utils.CompareDateDMY;
+import com.warehousemanagement.wms.utils.CompareFiles;
+import com.warehousemanagement.wms.utils.FindSumForDate;
+import com.warehousemanagement.wms.utils.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class OperatorService {
+    String folder="C:\\Users\\Pc\\Desktop\\js\\prj\\adminend\\admindashboard\\public\\img\\operators\\";
+    File avatarImage=new File(folder+"avatar.jpg");
     @Autowired
     private OperatorRepository operatorRepository;
     public OperatorWorkDays findDay(List<OperatorWorkDays> workDays,Date date){
@@ -70,7 +71,9 @@ public class OperatorService {
                 operator.getOperatorWorkDays().stream().map(day->
                     new WorkDaysDTO(day.getId(),day.getData(),day.getWorkedHours())
                 ).collect(Collectors.toList()),
-                operator.getInvoices().stream().map(invoice ->
+                operator.getInvoices().stream()
+                          .sorted(Comparator.comparing(Invoice::getDate).reversed())
+                        .map(invoice ->
                         new OperatorInvoiceDTO(invoice.getId(),invoice.getDate(),
                                 invoice.getCustomer().getNickname(),invoice.getShipped(),invoice.getTotalPrice()))
                 .collect(Collectors.toList())
@@ -137,5 +140,136 @@ public class OperatorService {
         }
 
 
+    }
+    public List<WeeklySalesDTO> getSales(Integer id,Integer period){
+        Calendar currentDate = Calendar.getInstance();
+        Calendar monthsAgo = Calendar.getInstance();
+        monthsAgo.add(Calendar.MONTH, -period);
+        Date startDate=monthsAgo.getTime();
+        List<WeeklySalesDTO> salesDTOS=operatorRepository.getWeeklySales(id,startDate);
+        List<WeeklySalesDTO> weeksList=new ArrayList<>();
+        while(currentDate.after(monthsAgo)){
+            Calendar weekStart = (Calendar) currentDate.clone();
+            weekStart.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+            weekStart.set(Calendar.HOUR_OF_DAY, 0);
+            weekStart.set(Calendar.MINUTE, 0);
+            weekStart.set(Calendar.SECOND, 0);
+            Calendar weekEnd = (Calendar) weekStart.clone();
+            weekEnd.add(Calendar.DAY_OF_WEEK, 6);
+            double sumSales = FindSumForDate.findSumForDate(salesDTOS, weekStart.getTime(),weekEnd.getTime());
+            weeksList.add(new WeeklySalesDTO(weekStart.getTime(),sumSales));
+            currentDate.add(Calendar.WEEK_OF_YEAR, -1);
+        }
+        return weeksList;
+    }
+
+    public String addOperator(
+                             String nickname,
+                              String name,
+                              String surname,
+                              String email,
+                              Integer phone,
+                              String address,
+                              String imgName,
+                              MultipartFile file) {
+        try {
+//            System.out.println(nickname + imgName + phone + address + email);
+            ImageHandler imageHandler = new ImageHandler();
+            byte[] bytes = file.getBytes();
+            if(imgName.isEmpty()){
+                imgName="avatar.jpg";
+            } else{
+                imgName=imageHandler.setImgName(imgName, folder);
+                String filePath = folder + imgName;
+                Files.write(Paths.get(filePath), bytes);
+            }
+
+
+            String dbFilePath = "/img/operators/" + imgName;
+//            String filePath = folder + imgName;
+//            Files.write(Paths.get(filePath), bytes);
+            Operator operator = new Operator(nickname,
+                    "1111",
+                    dbFilePath,
+                    email.isEmpty() ? "--" : email,
+                    phone,
+                    address.isEmpty() ? "--" : address,
+                    name,surname,"activ");
+            operatorRepository.save(operator);
+            return "Operatorul a fost creat cu succes.";
+        }catch (Exception e){
+            return "An error occurred: " + e.getMessage();
+        }
+
+    }
+
+    public String updateOperator(Integer id, String nickname, String name, String surname, String email, Integer phone, String address, String imgName, MultipartFile file)  {
+       try{
+        Optional<Operator> optionalOperator=operatorRepository.findById(id);
+        if(!optionalOperator.isPresent()) return "Operatorul nu a fost gasit";
+        Operator operator=optionalOperator.get();
+        String originalImgName=operator.getAvatar().substring(operator.getAvatar().lastIndexOf('/')+1);
+        File fileImg=new File(folder+originalImgName);
+        String dbFilePath="/img/clients/"+originalImgName;
+        String filePath;
+        ImageHandler imageHandler=new ImageHandler();
+        if(file.isEmpty()){
+            if(!originalImgName.equals(imgName) && !originalImgName.equals("avatar.jpg")){
+                String newImgName=imageHandler.setImgName(imgName,folder);
+                File newFile=new File(folder+newImgName);
+                fileImg.renameTo(newFile);
+                dbFilePath="/img/operators/"+newImgName;
+                System.out.println("Primul"+newImgName);
+            }
+        }else{
+            String newImgName=imageHandler.setImgName(imgName,folder);
+            byte[] bytes=file.getBytes();
+            filePath=folder+newImgName;
+            Files.write(Paths.get(filePath), bytes);
+            System.out.println("aL DOILEA"+newImgName);
+            boolean areEqual= CompareFiles.compareFiles(avatarImage,fileImg);
+            if(!areEqual){
+                System.out.println("areEqual="+areEqual);
+                System.out.println("avatarImage"+avatarImage.getAbsolutePath());
+                System.out.println("fileImg"+fileImg.getAbsolutePath());
+                if(!fileImg.delete()) return "Probleme la stergera imaginii vechi";
+            }
+
+            dbFilePath="/img/operators/"+newImgName;
+        }
+            operator.setName(name);
+            operator.setNickname(nickname);
+            operator.setSurname(surname);
+            operator.setPhone(phone);
+            operator.setAddress(address);
+            operator.setAvatar(dbFilePath);
+            operatorRepository.save(operator);
+
+
+        return "Operatorul a fost editat cu succes";
+    }catch (Exception e){
+        return "An error occurred: " + e.getMessage();
+    }
+    }
+
+    public String deleteOperator(Integer id) {
+        try{
+            Optional<Operator> optionalOperator=operatorRepository.findById(id);
+            if(!optionalOperator.isPresent()) return "Operatorul nu a fost gasit.";
+            Operator operator=optionalOperator.get();
+            String originalImgName=operator.getAvatar().substring(operator.getAvatar().lastIndexOf('/')+1);
+            File fileImg=new File(folder+originalImgName);
+            boolean areEqual= CompareFiles.compareFiles(avatarImage,fileImg);
+            if(!areEqual){
+                if(!fileImg.delete()) return "Probleme la stergera imaginii vechi";
+                operator.setAvatar("/img/operators/avatar.jpg");
+            }
+            operator.setStatus("inactiv");
+            operatorRepository.save(operator);
+            return "Operatorul a fost șters";
+
+        }catch (Exception e) {
+            return "An error occurred: " + e.getMessage();
+        }
     }
 }
