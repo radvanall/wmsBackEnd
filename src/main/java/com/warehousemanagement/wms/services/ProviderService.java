@@ -6,6 +6,7 @@ import com.warehousemanagement.wms.repository.PositionRepository;
 import com.warehousemanagement.wms.repository.ProviderRepository;
 import com.warehousemanagement.wms.utils.FindSumForDate;
 import com.warehousemanagement.wms.utils.ImageHandler;
+import com.warehousemanagement.wms.utils.SalesAndAcquisitions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -139,29 +140,30 @@ public String updateProvider(Integer id,String providerName,
     }
 
     public List<SaleAndAcquisitionDTO> getBalance(Integer id,Integer period) {
-        Calendar currentDate = Calendar.getInstance();
+//        Calendar currentDate = Calendar.getInstance();
         Calendar monthsAgo = Calendar.getInstance();
         monthsAgo.add(Calendar.MONTH, -period);
         Date startDate=monthsAgo.getTime();
-        List<SaleAndAcquisitionDTO> saleAndAcquisitionDTOS=new ArrayList<>();
+//        List<SaleAndAcquisitionDTO> saleAndAcquisitionDTOS=new ArrayList<>();
         List<WeeklySalesDTO> salesDTOS=providerRepository.getWeeklySales(id,startDate);
         List<WeeklySalesDTO> acquisitionsDTOS= providerRepository.getWeeklyAcquisitions(id,startDate);
+        return SalesAndAcquisitions.getSalesAndAcquisitions(monthsAgo,
+                salesDTOS,acquisitionsDTOS);
 
-
-        while (currentDate.after(monthsAgo)) {
-            Calendar weekStart = (Calendar) currentDate.clone();
-            weekStart.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-            weekStart.set(Calendar.HOUR_OF_DAY, 0);
-            weekStart.set(Calendar.MINUTE, 0);
-            weekStart.set(Calendar.SECOND, 0);
-            Calendar weekEnd = (Calendar) weekStart.clone();
-            weekEnd.add(Calendar.DAY_OF_WEEK, 6);
-            System.out.println("weekStart="+weekStart.getTime());
-            double sumSales = FindSumForDate.findSumForDate(salesDTOS, weekStart.getTime(),weekEnd.getTime());
-            double sumAcquisitions = FindSumForDate.findSumForDate(acquisitionsDTOS, weekStart.getTime(),weekEnd.getTime());
-            saleAndAcquisitionDTOS.add(new SaleAndAcquisitionDTO(weekStart.getTime(),sumSales,sumAcquisitions));
-            currentDate.add(Calendar.WEEK_OF_YEAR, -1);
-        }
-        return saleAndAcquisitionDTOS;
+//        while (currentDate.after(monthsAgo)) {
+//            Calendar weekStart = (Calendar) currentDate.clone();
+//            weekStart.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+//            weekStart.set(Calendar.HOUR_OF_DAY, 0);
+//            weekStart.set(Calendar.MINUTE, 0);
+//            weekStart.set(Calendar.SECOND, 0);
+//            Calendar weekEnd = (Calendar) weekStart.clone();
+//            weekEnd.add(Calendar.DAY_OF_WEEK, 6);
+//            System.out.println("weekStart="+weekStart.getTime());
+//            double sumSales = FindSumForDate.findSumForDate(salesDTOS, weekStart.getTime(),weekEnd.getTime());
+//            double sumAcquisitions = FindSumForDate.findSumForDate(acquisitionsDTOS, weekStart.getTime(),weekEnd.getTime());
+//            saleAndAcquisitionDTOS.add(new SaleAndAcquisitionDTO(weekStart.getTime(),sumSales,sumAcquisitions));
+//            currentDate.add(Calendar.WEEK_OF_YEAR, -1);
+//        }
+//        return saleAndAcquisitionDTOS;
     }
 }
