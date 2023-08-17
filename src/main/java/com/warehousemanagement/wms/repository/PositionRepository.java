@@ -2,6 +2,7 @@ package com.warehousemanagement.wms.repository;
 
 import com.warehousemanagement.wms.dto.ProductDTO;
 import com.warehousemanagement.wms.dto.ProductTableDTO;
+import com.warehousemanagement.wms.dto.WeeklySalesDTO;
 import com.warehousemanagement.wms.model.Position;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -50,4 +52,24 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
     void disablePosition(@Param("id")Integer id);
     @Query("SELECT DISTINCT p FROM Position p JOIN p.stocks s WHERE s.state IN ('inSale', 'forSale')")
     List<Position> findPositionsWithSaleStocks();
+
+    @Query("SELECT  NEW com.warehousemanagement.wms.dto.WeeklySalesDTO( " +
+            "date_trunc('week',i.dateOfCreation) AS weekStart,SUM(s.buyingPrice*s.stockQuantity)) FROM Position p " +
+            "INNER JOIN p.stocks s " +
+            "INNER JOIN s.invoiceReception i " +
+            "WHERE p.id=:id "+
+            "AND i.dateOfCreation>=:startDate "+
+            "GROUP BY weekStart " +
+            "ORDER BY weekStart ")
+    List<WeeklySalesDTO> getWeeklyAcquisitions(@Param("id") Integer id,@Param("startDate") Date startDate);
+    @Query("SELECT  NEW com.warehousemanagement.wms.dto.WeeklySalesDTO( " +
+            "date_trunc('week',i.date) AS weekStart,SUM(s.sellingPrice*o.quantity) AS totalSales) FROM Position p " +
+            "INNER JOIN  p.stocks s " +
+            "INNER JOIN s.order o " +
+            "INNER JOIN o.invoice i " +
+            "WHERE p.id=:id "+
+            "AND i.date>=:startDate "+
+            "GROUP BY weekStart " +
+            "ORDER BY weekStart ")
+    List<WeeklySalesDTO> getWeeklySales(@Param("id") Integer id, @Param("startDate") Date startDate);
 }

@@ -1,16 +1,17 @@
 package com.warehousemanagement.wms.services;
 
-import com.warehousemanagement.wms.dto.PositionForSaleDTO;
-import com.warehousemanagement.wms.dto.ProductDTO;
-import com.warehousemanagement.wms.dto.ProductTableDTO;
-import com.warehousemanagement.wms.dto.StockForSale;
+import com.warehousemanagement.wms.dto.*;
 import com.warehousemanagement.wms.model.Order;
 import com.warehousemanagement.wms.model.Position;
 import com.warehousemanagement.wms.repository.OrderRepository;
 import com.warehousemanagement.wms.repository.PositionRepository;
 
+import com.warehousemanagement.wms.utils.FindSumForDate;
+import com.warehousemanagement.wms.utils.SalesAndAcquisitions;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -25,8 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -159,5 +159,39 @@ public class PositionService {
                         .collect(Collectors.toList()));
         return positionForSaleDTO;
 
+    }
+    public List<SaleAndAcquisitionDTO> getBalance(Integer id, Integer period) {
+        Calendar monthsAgo = Calendar.getInstance();
+        monthsAgo.add(Calendar.MONTH, -period);
+        Date startDate=monthsAgo.getTime();
+        List<WeeklySalesDTO> salesDTOS=positionRepository.getWeeklySales(id,startDate);
+        List<WeeklySalesDTO> acquisitionsDTOS= positionRepository.getWeeklyAcquisitions(id,startDate);
+        return SalesAndAcquisitions.getSalesAndAcquisitions(monthsAgo,
+                salesDTOS,acquisitionsDTOS);
+
+    }
+
+    public ResponseEntity<?> getOrders(Integer id) {
+        try {
+            Optional<Position> optionalPosition = positionRepository.findById(id);
+            if (!optionalPosition.isPresent()) return ResponseEntity.badRequest().body("Nu exista asa produs");
+            Position position = optionalPosition.get();
+            List<PositionOrdersDTO> positionOrdersDTOS = new ArrayList<>();
+            position.getStocks().stream().forEach(stock -> {
+                if (!stock.getOrder().isEmpty()) {
+                    stock.getOrder().stream().forEach(order ->
+                            positionOrdersDTOS.add(new PositionOrdersDTO(
+                                    order.getInvoice().getId(),
+                                    order.getInvoice().getDate(),
+                                    order.getInvoice().getCustomer().getNickname(),
+                                    order.getQuantity(),
+                                    stock.getSellingPrice()
+                            )));
+                }
+            });
+            return ResponseEntity.ok(positionOrdersDTOS);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+        }
     }
 }

@@ -1,10 +1,9 @@
 package com.warehousemanagement.wms.controller;
 
-import com.warehousemanagement.wms.dto.PositionForSaleDTO;
-import com.warehousemanagement.wms.dto.ProductDTO;
-import com.warehousemanagement.wms.dto.ProductTableDTO;
+import com.warehousemanagement.wms.dto.*;
 import com.warehousemanagement.wms.model.Position;
 import com.warehousemanagement.wms.services.PositionService;
+import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -106,5 +105,14 @@ public class PositionController {
 //        return new ResponseEntity<>(productDTO, HttpStatus.OK);
         return productDTO;
 
+    }
+    @RequestMapping(method = RequestMethod.GET,value="/getBalance")
+    public List<SaleAndAcquisitionDTO> getBalance(@RequestParam("id") Integer id,
+                                                  @RequestParam("period") Integer period){
+        return positionService.getBalance(id,period);
+    }
+    @RequestMapping(method = RequestMethod.GET,value="/getOrders/{id}")
+    public ResponseEntity<?> getOrders(@PathVariable Integer id){
+        return positionService.getOrders(id);
     }
 }
