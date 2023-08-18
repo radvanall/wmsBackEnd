@@ -3,6 +3,7 @@ package com.warehousemanagement.wms.controller;
 import com.warehousemanagement.wms.dto.AuthenticationRequest;
 import com.warehousemanagement.wms.dto.AuthenticationResponse;
 import com.warehousemanagement.wms.security.JwtUtil;
+import com.warehousemanagement.wms.security.NewUserDetails;
 import com.warehousemanagement.wms.security.NewUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,16 +35,17 @@ public class AuthenticationController {
             );
         } catch (BadCredentialsException e) {
             System.out.println("Incorrect username or password"+ e);
-            throw new Exception("Incorrect username or password", e);
+//            throw new Exception("Incorrect username or password", e);
+            return ResponseEntity.badRequest().body("Incorrect username or password");
         }catch (Exception ex){
             System.out.println("Incorrect "+ ex);
         }
         System.out.println("Incorrect username or password");
-       final UserDetails userDetails=userDetailsService
+       final NewUserDetails userDetails=userDetailsService
                .loadUserByUsername(authenticationRequest.getUsername());
         System.out.println("User details:"+userDetails.getUsername());
         final String jwt=jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        return ResponseEntity.ok(new AuthenticationResponse(jwt,userDetails.getUsername(),userDetails.getAvatar(),userDetails.getId()));
 //        return ResponseEntity.ok(authenticationRequest);
     }
 }
