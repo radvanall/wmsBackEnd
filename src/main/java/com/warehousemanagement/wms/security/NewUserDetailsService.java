@@ -15,7 +15,7 @@ public class NewUserDetailsService implements UserDetailsService {
     @Autowired
     AdministratorRepository administratorRepository;
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public NewUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
       Optional<Administrator> optionalAdministrator= administratorRepository.findByNickname(username);
      optionalAdministrator.orElseThrow(()->new UsernameNotFoundException("Not found: " + username) );
         return optionalAdministrator.map(NewUserDetails::new).get();
