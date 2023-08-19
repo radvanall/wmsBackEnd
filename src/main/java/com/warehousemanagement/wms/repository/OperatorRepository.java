@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OperatorRepository extends JpaRepository<Operator,Integer> {
@@ -21,4 +22,5 @@ public interface OperatorRepository extends JpaRepository<Operator,Integer> {
             "GROUP BY weekStart " +
             "ORDER BY weekStart " )
     List<WeeklySalesDTO> getWeeklySales(@Param("id") Integer id, @Param("startDate") Date startDate);
+    Optional<Operator>findByNickname(String nickname);
 }

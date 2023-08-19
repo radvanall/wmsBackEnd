@@ -1,6 +1,7 @@
 package com.warehousemanagement.wms.security;
 
 import com.warehousemanagement.wms.model.Administrator;
+import com.warehousemanagement.wms.model.Operator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,15 +24,26 @@ public class NewUserDetails implements UserDetails {
         this.password=administrator.getPassword();
         this.avatar=administrator.getAvatar();
         this.id=administrator.getId();
-        this.authorities = new ArrayList<>(); // Initialize the authorities list
-        this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        this.authorities = new ArrayList<>();
+        if(administrator.getId()==1)
+            this.authorities.add(new SimpleGrantedAuthority("ROLE_MAIN"));
+        else
+            this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
+    public NewUserDetails(Operator operator) {
+        this.userName=operator.getNickname();
+        this.password=operator.getPassword();
+        this.avatar=operator.getAvatar();
+        this.id=operator.getId();
+        this.authorities = new ArrayList<>();
+        this.authorities.add(new SimpleGrantedAuthority("ROLE_OPERATOR"));
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
         return authorities;
     }
+
     public void addRole(String role) {
         this.authorities.add(new SimpleGrantedAuthority(role));
 //        this.roles.add(role);
