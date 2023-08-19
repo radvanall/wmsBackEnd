@@ -25,19 +25,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService);
     }
 
-
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.csrf().disable().authorizeRequests()
-//                .antMatchers("/admin").hasRole("ADMIN")
-//                .antMatchers("/user").hasAnyRole("ADMIN", "USER")
-//                .antMatchers("/login").permitAll()
-//                .and().formLogin();
-//    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
+        http.cors()
+                .and()
+        .csrf().disable().authorizeRequests()
                 .antMatchers("/authenticate").permitAll()
-                .antMatchers("/api/position/**").hasAnyRole("ROLE_OPERATOR")
+//                .antMatchers("/api/position/**").hasAnyRole("ROLE_OPERATOR")
                 .anyRequest().authenticated()
         .and().sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
