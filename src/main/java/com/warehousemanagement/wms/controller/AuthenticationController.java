@@ -10,11 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 public class AuthenticationController {
@@ -45,7 +48,9 @@ public class AuthenticationController {
                .loadUserByUsername(authenticationRequest.getUsername());
         System.out.println("User details:"+userDetails.getUsername());
         final String jwt=jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new AuthenticationResponse(jwt,userDetails.getUsername(),userDetails.getAvatar(),userDetails.getId()));
+        return ResponseEntity.ok(new AuthenticationResponse(jwt,userDetails.getUsername(),
+                userDetails.getAvatar(),userDetails.getId(),
+                userDetails.getAuthorities().stream().findFirst().get().toString()));
 //        return ResponseEntity.ok(authenticationRequest);
     }
 }
