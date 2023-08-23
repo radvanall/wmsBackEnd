@@ -18,20 +18,21 @@ public class Administrator {
     private String email;
     private Integer phone;
     private String address;
+    private String status;
     private String name;
     private String surname;
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL},mappedBy = "createdBy")
 //    @JoinColumn(name="administrator_id", referencedColumnName ="id" )
     private List<InvoiceReception> invoiceReceptions;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name="administrator_id", referencedColumnName ="id" )
     private List<AdminWorkDays> adminWorkDays;
 
     public Administrator() {
     }
 
-    public Administrator(String nickname, String password, String avatar, String email, Integer phone, String address, String name, String surname, List<InvoiceReception> invoiceReceptions,List<AdminWorkDays> adminWorkDays) {
+    public Administrator(String nickname, String password, String avatar, String email, Integer phone, String address, String name, String surname,String status, List<InvoiceReception> invoiceReceptions,List<AdminWorkDays> adminWorkDays) {
         this.nickname = nickname;
         this.password = password;
         this.avatar = avatar;
@@ -40,9 +41,23 @@ public class Administrator {
         this.address = address;
         this.name = name;
         this.surname = surname;
+        this.status=status;
         this.invoiceReceptions = invoiceReceptions;
         this.adminWorkDays=adminWorkDays;
     }
+    public Administrator(String nickname, String password, String avatar, String email, Integer phone, String address, String name, String surname,String status) {
+        this.nickname = nickname;
+        this.password = password;
+        this.avatar = avatar;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.name = name;
+        this.surname = surname;
+        this.status=status;
+
+    }
+
 
     public Integer getId() {
         return id;
@@ -122,6 +137,14 @@ public class Administrator {
 
     public void setInvoiceReceptions(List<InvoiceReception> invoiceReceptions) {
         this.invoiceReceptions = invoiceReceptions;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public List<AdminWorkDays> getAdminWorkDays() {
