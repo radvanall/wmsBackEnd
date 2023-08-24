@@ -52,7 +52,32 @@ public class PositionService {
             imgName=now+imgName;}
         return imgName;
     }
+   public List<ProductsWeeklySalesDTO> getProductWeeklyData(List<TopSalesDTO> topSalesDTOS){
+       List<ProductsWeeklySalesDTO> productSales=new ArrayList<>();
+       for(TopSalesDTO sale :topSalesDTOS ){
+           boolean isPresent=false;
+           for(ProductsWeeklySalesDTO productSale:productSales) {
+               if (productSale.getId().equals(sale.getId())) {
+                   productSale.addSale(new WeeklySalesDTO(sale.getDate(), sale.getWeeklySum()));
+                   isPresent = true;
+                   break;
+               }
+           }
+           if(!isPresent) {
+               List<WeeklySalesDTO> weeklySalesDTO =new ArrayList<>();
+               weeklySalesDTO.add(new WeeklySalesDTO(sale.getDate(),sale.getWeeklySum()));
+               productSales.add(
+                       new ProductsWeeklySalesDTO(
+                               sale.getId(),
+                               sale.getName(),
+                               weeklySalesDTO
+                       )
+               );
+           }
 
+       }
+       return productSales;
+   }
 
     public void setPosition(List<Position> positionList) {
         positionRepository.saveAll(positionList);
@@ -170,7 +195,19 @@ public class PositionService {
                 salesDTOS,acquisitionsDTOS);
 
     }
-
+    public ResponseEntity<?> getTotalBalance(Integer period, Integer criteria) {
+        Calendar monthsAgo = Calendar.getInstance();
+        monthsAgo.add(Calendar.MONTH, -period);
+        Date startDate=monthsAgo.getTime();
+        List<WeeklySalesDTO> salesDTOS=criteria==1?
+                positionRepository.getWeeklySalesQ(startDate):
+                positionRepository.getWeeklySales(startDate);
+        List<WeeklySalesDTO> acquisitionsDTOS=criteria==2?
+                positionRepository.getWeeklyAcquisitionsQ(startDate):
+                positionRepository.getWeeklyAcquisitions(startDate);
+        return ResponseEntity.ok().body(SalesAndAcquisitions.getSalesAndAcquisitions(monthsAgo,
+                salesDTOS,acquisitionsDTOS));
+    }
     public ResponseEntity<?> getOrders(Integer id) {
         try {
             Optional<Position> optionalPosition = positionRepository.findById(id);
@@ -193,5 +230,86 @@ public class PositionService {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
+    }
+
+    public ResponseEntity<?> getRemainingStocks(Long maxQuantity) {
+        List<RemainingStock> remainingStocks=positionRepository.getRemainingStocks(maxQuantity);
+        return ResponseEntity.ok().body(remainingStocks);
+    }
+
+
+    public ResponseEntity<?> getTopSales(Integer period) {
+        Calendar monthsAgo = Calendar.getInstance();
+        monthsAgo.add(Calendar.MONTH, -period);
+        Date startDate=monthsAgo.getTime();
+        List<TopSalesDTO> topSalesDTOS=positionRepository.getTopSales(startDate);
+        List<ProductsWeeklySalesDTO> productSales=getProductWeeklyData(topSalesDTOS);
+//        List<ProductsWeeklySalesDTO> productSales=new ArrayList<>();
+//        for(TopSalesDTO sale :topSalesDTOS ){
+//            boolean isPresent=false;
+//            for(ProductsWeeklySalesDTO productSale:productSales) {
+//                if (productSale.getId().equals(sale.getId())) {
+//                    productSale.addSale(new WeeklySalesDTO(sale.getDate(), sale.getWeeklySum()));
+//                    isPresent = true;
+//                    break;
+//                }
+//            }
+//                if(!isPresent) {
+//                    List<WeeklySalesDTO> weeklySalesDTO =new ArrayList<>();
+//                    weeklySalesDTO.add(new WeeklySalesDTO(sale.getDate(),sale.getWeeklySum()));
+//                    productSales.add(
+//                            new ProductsWeeklySalesDTO(
+//                                    sale.getId(),
+//                                    sale.getName(),
+//                                    weeklySalesDTO
+//                            )
+//                    );
+//                }
+//
+//        }
+//        return  ResponseEntity.ok().body(topSalesDTOS);
+        return  ResponseEntity.ok().body(productSales);
+
+    }
+
+    public ResponseEntity<?> getTopBalance(Integer period,Integer nrOfPositions) {
+        Calendar monthsAgo = Calendar.getInstance();
+        monthsAgo.add(Calendar.MONTH, -period);
+        Date startDate=monthsAgo.getTime();
+        List<TopSalesDTO> topSalesDTOS=positionRepository.getAllSales(startDate);
+        List<TopSalesDTO> topAcquisitionsDTOS=positionRepository.getAllAcquisitions(startDate);
+        topSalesDTOS.forEach(item->
+                System.out.println(item.toString()));
+        topAcquisitionsDTOS.forEach(item->
+                System.out.println(item.toString()));
+        List<ProductsWeeklySalesDTO> productSales=getProductWeeklyData(topSalesDTOS);
+        List<ProductsWeeklySalesDTO> productAcquisitions=getProductWeeklyData(topAcquisitionsDTOS);
+        List<ProductsWeeklySalesDTO> productBalance=new ArrayList<>();
+
+        for(ProductsWeeklySalesDTO productAcquisition:productAcquisitions){
+            for(ProductsWeeklySalesDTO productSale:productSales){
+                if(productAcquisition.getId().equals(productSale.getId())){
+                  List<WeeklySalesDTO> balance= SalesAndAcquisitions.getWeeklyBalance(monthsAgo,productSale.getSales(),productAcquisition.getSales());
+                  WeeklySalesDTO notNullBalance=balance.stream().filter(sale->sale.getTotalSales()!=0)
+                          .findAny().orElse(null);
+                  if(notNullBalance!=null)
+                  productBalance.add(new ProductsWeeklySalesDTO(productAcquisition.getId(),productAcquisition.getName(),
+                          balance));
+                }
+            }
+        }
+       Collections.sort(productBalance, (o1, o2) -> {
+           Double firstSum=o1.getSales().stream().mapToDouble(WeeklySalesDTO::getTotalSales)
+                   .sum();
+           Double secondSum=o2.getSales().stream().mapToDouble(WeeklySalesDTO::getTotalSales)
+                   .sum();
+           return Double.valueOf(secondSum).compareTo(firstSum);
+       });
+        List<ProductsWeeklySalesDTO> top = productBalance.subList(0, Math.min(productBalance.size(), nrOfPositions));
+
+
+
+        return ResponseEntity.ok().body(top);
+
     }
 }

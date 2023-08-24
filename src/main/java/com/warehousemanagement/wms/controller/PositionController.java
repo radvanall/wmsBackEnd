@@ -115,4 +115,23 @@ public class PositionController {
     public ResponseEntity<?> getOrders(@PathVariable Integer id){
         return positionService.getOrders(id);
     }
+
+    @RequestMapping(method = RequestMethod.GET,value="/getRemainingStocks")
+    public ResponseEntity<?> getRemainingStocks(@RequestParam("maxQuantity") Long maxQuantity){
+        return positionService.getRemainingStocks(maxQuantity);
+    }
+    @RequestMapping(method = RequestMethod.GET,value="/getTotalBalance")
+    public ResponseEntity<?> getTotalBalance (@RequestParam("period") Integer period,
+                                                @RequestParam("criteria") Integer criteria){
+        return positionService.getTotalBalance(period,criteria);
+    }
+    @RequestMapping(method = RequestMethod.GET,value="/getTopSales")
+    public ResponseEntity<?> getTopSales (@RequestParam("period") Integer period){
+        return positionService.getTopSales(period);
+    }
+    @RequestMapping(method = RequestMethod.GET,value="/getTopBalance")
+    public ResponseEntity<?> getTopBalance(@RequestParam("period") Integer period,
+                                           @RequestParam("nrOfPositions") Integer nrOfPositions){
+        return positionService.getTopBalance(period,nrOfPositions);
+    }
 }
