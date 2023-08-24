@@ -13,6 +13,10 @@ public class WeeklySalesDTO {
         this.weekStart = weekStart;
         this.totalSales = totalSales;
     }
+    public WeeklySalesDTO(Date weekStart, long totalSales) {
+        this.weekStart = weekStart;
+        this.totalSales = Double.valueOf(totalSales);
+    }
 
     public Date getWeekStart() {
         return weekStart;
