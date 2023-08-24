@@ -42,6 +42,10 @@ public class InvoiceController {
     public List<InvoiceTableDataDTO> getAllInvoice(){
         return invoiceService.getInvoices();
     }
+    @RequestMapping(method = RequestMethod.GET, value="/getPendingOrders")
+    public List<InvoiceTableDataDTO> getPendingOrders(){
+        return invoiceService.getPendingOrders();
+    }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
     public SingleInvoiceDTO getInvoice(@PathVariable Integer id){
         return invoiceService.getInvoice(id);

@@ -304,4 +304,19 @@ public class InvoiceService {
         List<WeeklySalesDTO> weeklySalesDTOS=invoiceRepository.getWeeklySales(monthsAgo,id);
         return  weeklySalesDTOS;
     }
+
+    public List<InvoiceTableDataDTO> getPendingOrders() {
+        List<Invoice> invoices=invoiceRepository.findAll();
+//        if(invoices.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nu exista facturi.");
+//        }
+        List<InvoiceTableDataDTO> invoiceTableDataDTOS=invoices.stream().filter(item->!item.getShipped()).map(invoice ->
+                new InvoiceTableDataDTO(invoice.getId(),invoice.getCustomer().getAvatar(),
+                        invoice.getCustomer().getNickname(), invoice.getDate(),
+                        invoice.getOperator().getNickname(),invoice.getTotalPrice()))
+                .collect(Collectors.toList());
+
+        return invoiceTableDataDTOS;
+
+    }
 }
