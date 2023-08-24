@@ -87,6 +87,7 @@ public class OperatorController {
     @RequestMapping(method = RequestMethod.PUT, value="/delete/{id}")
     public ResponseEntity<?> deleteCustomer(@PathVariable Integer id)
     {
+        System.out.println("op control");
         String response=operatorService.deleteOperator(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);

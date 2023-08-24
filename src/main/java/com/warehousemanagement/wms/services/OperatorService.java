@@ -138,8 +138,6 @@ public class OperatorService {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
-
-
     }
     public List<WeeklySalesDTO> getSales(Integer id,Integer period){
         Calendar currentDate = Calendar.getInstance();
@@ -210,7 +208,7 @@ public class OperatorService {
         Operator operator=optionalOperator.get();
         String originalImgName=operator.getAvatar().substring(operator.getAvatar().lastIndexOf('/')+1);
         File fileImg=new File(folder+originalImgName);
-        String dbFilePath="/img/clients/"+originalImgName;
+        String dbFilePath="/img/operators/"+originalImgName;
         String filePath;
         ImageHandler imageHandler=new ImageHandler();
         if(file.isEmpty()){
