@@ -17,6 +17,20 @@ public class InvoiceTableDataDTO {
     public InvoiceTableDataDTO(Integer id,
                                String image,
                                String customer,
+                               Date date,
+                               String operator,
+                               Double price) {
+        this.id = id;
+        this.image = image;
+        this.customer = customer;
+        this.date = date;
+        this.operator = operator;
+        this.price = price;
+    }
+
+    public InvoiceTableDataDTO(Integer id,
+                               String image,
+                               String customer,
                                Date date, String operator,
                                Double price, Boolean shipped) {
         this.id = id;
