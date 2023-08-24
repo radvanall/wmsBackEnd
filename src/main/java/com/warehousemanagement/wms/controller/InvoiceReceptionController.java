@@ -48,6 +48,14 @@ public class InvoiceReceptionController {
     public List<InvoiceReceptionTableDTO> getInvoiceReceptionsTable(){
         return invoiceReceptionService.getInvoiceReceptionsTable();
     }
+    @RequestMapping(method = RequestMethod.GET, value="/readInvoiceReceptionTable/{id}")
+    public List<InvoiceReceptionTableDTO> getInvoiceReceptionsTable(@PathVariable Integer id){
+        return invoiceReceptionService.getInvoiceReceptionsTable(id);
+    }
+    @RequestMapping(method = RequestMethod.GET, value="/readUnvalidatedInvoiceReceptionTable")
+    public List<InvoiceReceptionTableDTO> getUnvalidatedInvoiceReceptionsTable(){
+        return invoiceReceptionService.getUnvalidatedInvoiceReceptionsTable();
+    }
     @RequestMapping(method = RequestMethod.GET, value="/read/{id}")
     public InvoiceReceptionDTO getInvoiceReception(@PathVariable Integer id){
         return invoiceReceptionService.getInvoiceReception(id);

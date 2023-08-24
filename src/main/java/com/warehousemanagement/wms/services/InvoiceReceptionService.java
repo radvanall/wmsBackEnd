@@ -139,4 +139,37 @@ public class InvoiceReceptionService {
             return "Factura a fost validată";
         }
 
+    public List<InvoiceReceptionTableDTO> getUnvalidatedInvoiceReceptionsTable() {
+        List<InvoiceReception> invoiceReception=invoiceReceptionRepository.findAll();
+        List<InvoiceReceptionTableDTO> invoiceReceptionTableDTOS=
+                invoiceReception.stream().filter(item->!item.getValidated()).map(invoice-> new InvoiceReceptionTableDTO(invoice.getId(),
+                        invoice.getDateOfCreation(),
+                        invoice.getCreatedBy().getNickname(),
+                        invoice.getStocks().stream()
+                                .mapToDouble(stock -> stock.getBuyingPrice()*stock.getStockQuantity())
+                                .sum(),
+                        invoice.getStocks().stream()
+                                .mapToDouble(stock -> stock.getSellingPrice()*stock.getStockQuantity())
+                                .sum(),
+                        invoice.getProvider().getProviderName())).collect(Collectors.toList());
+        return invoiceReceptionTableDTOS;
+    }
+
+    public List<InvoiceReceptionTableDTO> getInvoiceReceptionsTable(Integer id) {
+        List<InvoiceReception> invoiceReception=invoiceReceptionRepository.findAllByValidatedById(id);
+        List<InvoiceReceptionTableDTO> invoiceReceptionTableDTOS=
+                invoiceReception.stream().filter(invoice->invoice.getValidated())
+                        .filter(invoice->invoice.getValidatedBy().getId()==id)
+                        .map(invoice-> new InvoiceReceptionTableDTO(invoice.getId(),invoice.getValidated(),
+                                invoice.getDateOfCreation(),invoice.getDateOfValidation()
+                                ,invoice.getCreatedBy().getNickname(),
+                                invoice.getStocks().stream()
+                                        .mapToDouble(stock -> stock.getBuyingPrice()*stock.getStockQuantity())
+                                        .sum(),
+                                invoice.getStocks().stream()
+                                        .mapToDouble(stock -> stock.getSellingPrice()*stock.getStockQuantity())
+                                        .sum(),
+                                invoice.getProvider().getProviderName())).collect(Collectors.toList());
+        return invoiceReceptionTableDTOS;
+    }
 }
