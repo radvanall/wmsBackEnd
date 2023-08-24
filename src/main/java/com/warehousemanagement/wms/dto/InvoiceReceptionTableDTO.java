@@ -16,6 +16,35 @@ public class InvoiceReceptionTableDTO {
     public InvoiceReceptionTableDTO() {
     }
 
+    public InvoiceReceptionTableDTO(Integer id, Date dateOfCreation,
+                                    String createdBy, Double totalBuyingPrice,
+                                    Double totalSellingPrice, String provider) {
+        this.id = id;
+        this.dateOfCreation = dateOfCreation;
+        this.createdBy = createdBy;
+        this.totalBuyingPrice = totalBuyingPrice;
+        this.totalSellingPrice = totalSellingPrice;
+        this.provider = provider;
+    }
+
+    public InvoiceReceptionTableDTO(Integer id,
+                                    Boolean validated,
+                                    Date dateOfCreation,
+                                    Date dateOfValidation,
+                                    String createdBy,
+                                    Double totalBuyingPrice,
+                                    Double totalSellingPrice,
+                                    String provider) {
+        this.id = id;
+        this.validated = validated;
+        this.dateOfCreation = dateOfCreation;
+        this.dateOfValidation = dateOfValidation;
+        this.createdBy = createdBy;
+        this.totalBuyingPrice = totalBuyingPrice;
+        this.totalSellingPrice = totalSellingPrice;
+        this.provider = provider;
+    }
+
     public InvoiceReceptionTableDTO(Integer id,
                                     Boolean validated,
                                     Date dateOfCreation,
