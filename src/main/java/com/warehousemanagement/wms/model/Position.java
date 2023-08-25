@@ -3,8 +3,10 @@ package com.warehousemanagement.wms.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.warehousemanagement.wms.dto.ProductDTO;
 import com.warehousemanagement.wms.dto.ProductTableDTO;
+import com.warehousemanagement.wms.dto.TopSalesDTO;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @NamedNativeQuery(
@@ -59,6 +61,44 @@ import java.util.List;
                         @ColumnResult(name="producator",type=Integer.class),
                         @ColumnResult(name="unitate",type=String.class),
                         @ColumnResult(name="descriere",type=String.class),
+                }
+        )
+)
+@NamedNativeQuery(
+        name = "Position.getTopSales",
+        query =  "SELECT t.id,  t.name, t.date, sum(t.sum) AS weeklySum " +
+                "FROM ( " +
+                "  SELECT p.id, p.name, date_trunc('week', i.date) AS date, sum(o.quantity * s.selling_price) AS sum " +
+                "  FROM work.position p " +
+                "  INNER JOIN work.stock s ON s.position_id = p.id " +
+                "  INNER JOIN work.order o ON o.stock_id = s.id " +
+                "  INNER JOIN work.invoice i ON i.id = o.invoice_id " +
+                "  WHERE date>=:startDate " +
+                "  GROUP BY p.name, date, i.date,p.id " +
+                ") AS t " +
+                " where t.id in ( " +
+                "SELECT m.id from (SELECT p.id, sum(total_price) as total_price from work.position p inner join " +
+                " work.stock s on s.position_id=p.id " +
+                "inner join work.order o on o.stock_id=s.id " +
+                "inner join work.invoice i on i.id=o.invoice_id " +
+                " WHERE date>=:startDate " +
+                " group by p.id " +
+                " order by total_price desc limit 2) as m " +
+                " ) " +
+                "GROUP BY t.name, t.date,t.id " +
+                "ORDER BY t.date ;",
+        resultSetMapping = "TopSalesDTO"
+)
+
+@SqlResultSetMapping(
+        name="TopSalesDTO",
+        classes = @ConstructorResult(
+                targetClass = TopSalesDTO.class,
+                columns={
+                        @ColumnResult(name="id", type=Integer.class),
+                        @ColumnResult(name="name",type=String.class),
+                        @ColumnResult(name="date",type= Date.class),
+                        @ColumnResult(name="weeklySum",type= Double.class),
                 }
         )
 )
