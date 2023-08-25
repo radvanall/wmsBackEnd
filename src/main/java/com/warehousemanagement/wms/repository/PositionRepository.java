@@ -140,7 +140,7 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
     List<TopSalesDTO> getTopSales(@Param("startDate") Date startDate);
 
 @Query("SELECT  NEW com.warehousemanagement.wms.dto.TopSalesDTO( " +
-        "p.id,p.name,date_trunc('week',i.date) AS weekStart,SUM(s.sellingPrice*o.quantity) AS totalSales) FROM Position p " +
+        "p.id,p.name,p.image,date_trunc('week',i.date) AS weekStart,SUM(s.sellingPrice*o.quantity) AS totalSales) FROM Position p " +
         "INNER JOIN  p.stocks s " +
         "INNER JOIN s.order o " +
         "INNER JOIN o.invoice i " +
@@ -150,11 +150,32 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
     List<TopSalesDTO> getAllSales(@Param("startDate") Date startDate);
 
     @Query("SELECT  NEW com.warehousemanagement.wms.dto.TopSalesDTO( " +
-            "p.id,p.name,date_trunc('week',i.dateOfCreation) AS weekStart,SUM(s.buyingPrice*s.stockQuantity)) FROM Position p " +
+            "p.id,p.name,p.image,date_trunc('week',i.dateOfCreation) AS weekStart,SUM(s.buyingPrice*s.stockQuantity)) FROM Position p " +
             "INNER JOIN p.stocks s " +
             "INNER JOIN s.invoiceReception i " +
             "WHERE i.dateOfCreation>=:startDate "+
             "GROUP BY weekStart ,p.id,p.name " +
             "ORDER BY weekStart ")
 List<TopSalesDTO> getAllAcquisitions(@Param("startDate") Date startDate);
+
+    @Query("SELECT NEW com.warehousemanagement.wms.dto.ProductWeekBalanceDTO( " +
+            "p.name, SUM(s.sellingPrice*o.quantity) as totalSales ) FROM " +
+            "Position p " +
+            "INNER JOIN p.stocks s " +
+            "INNER JOIN s.order o " +
+            "INNER JOIN o.invoice i " +
+            "WHERE i.date>=CURRENT_DATE - 7  " +
+            "GROUP BY p.name " +
+            "ORDER BY totalSales")
+    List<ProductWeekBalanceDTO> getLastWeekSales();
+
+
+    @Query("SELECT  NEW com.warehousemanagement.wms.dto.ProductWeekBalanceDTO( " +
+            "p.name,SUM(s.buyingPrice*s.stockQuantity) as totalAq) FROM Position p " +
+            "INNER JOIN p.stocks s " +
+            "INNER JOIN s.invoiceReception i " +
+            "WHERE i.dateOfCreation>=CURRENT_DATE - 7  "+
+            "GROUP BY p.name " +
+            "ORDER BY totalAq ")
+    List<ProductWeekBalanceDTO> getLastWeekAcquisitions();
 }

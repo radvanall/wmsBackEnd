@@ -125,13 +125,21 @@ public class PositionController {
                                                 @RequestParam("criteria") Integer criteria){
         return positionService.getTotalBalance(period,criteria);
     }
-    @RequestMapping(method = RequestMethod.GET,value="/getTopSales")
-    public ResponseEntity<?> getTopSales (@RequestParam("period") Integer period){
-        return positionService.getTopSales(period);
-    }
+//    @RequestMapping(method = RequestMethod.GET,value="/getTopSales")
+//    public ResponseEntity<?> getTopSales (@RequestParam("period") Integer period){
+//        return positionService.getTopSales(period);
+//    }
     @RequestMapping(method = RequestMethod.GET,value="/getTopBalance")
     public ResponseEntity<?> getTopBalance(@RequestParam("period") Integer period,
                                            @RequestParam("nrOfPositions") Integer nrOfPositions){
         return positionService.getTopBalance(period,nrOfPositions);
+    }
+    @RequestMapping(method = RequestMethod.GET,value="/getLastWeekSales")
+    public ResponseEntity<?> getLastWeekBalance(){
+        return positionService.getLastWeekSales();
+    }
+    @RequestMapping(method = RequestMethod.GET,value="/getLastWeekAcquisitions")
+    public ResponseEntity<?> getLastWeekAcquisitions(){
+        return positionService.getLastWeekAcquisitions();
     }
 }
