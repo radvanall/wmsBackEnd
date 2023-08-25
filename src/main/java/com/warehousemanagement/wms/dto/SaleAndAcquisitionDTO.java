@@ -40,4 +40,8 @@ public class SaleAndAcquisitionDTO {
         this.totalAcquisitions = totalAcquisitions;
     }
 
+    public double getBalance(){
+        return totalSales-totalAcquisitions;
+    }
+
 }
