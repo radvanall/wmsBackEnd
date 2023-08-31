@@ -8,6 +8,7 @@ import com.warehousemanagement.wms.utils.FindSumForDate;
 import com.warehousemanagement.wms.utils.ImageHandler;
 import com.warehousemanagement.wms.utils.SalesAndAcquisitions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -165,5 +166,30 @@ public String updateProvider(Integer id,String providerName,
 //            currentDate.add(Calendar.WEEK_OF_YEAR, -1);
 //        }
 //        return saleAndAcquisitionDTOS;
+    }
+
+    public ResponseEntity<?> getTotalBalance(Integer period) {
+        Calendar monthsAgo = Calendar.getInstance();
+        monthsAgo.add(Calendar.MONTH, -period);
+        Date startDate=monthsAgo.getTime();
+          List<TotalMoneyDTO> sales=providerRepository.getTotalSales(startDate);
+          List<TotalMoneyDTO> acquisitions=providerRepository.getTotalAcquisitions(startDate);
+          List<ProviderSalesAndAcquisitionsDTO> balance=new ArrayList<>();
+          sales.forEach(sale-> acquisitions.forEach(acq->{
+              if(sale.getId()==acq.getId())
+                  balance.add(new ProviderSalesAndAcquisitionsDTO(sale.getId(),sale.getImage(),sale.getName(),
+                          sale.getSum(),acq.getSum()));
+          }));
+          acquisitions.forEach(acq->{
+             ProviderSalesAndAcquisitionsDTO first= balance.stream().filter(item->item.getId().equals(acq.getId())).findFirst().orElse(null);
+              if(first==null &&acq.getSum()!=0.0){
+                  balance.add(new ProviderSalesAndAcquisitionsDTO(acq.getId(),acq.getImage(),acq.getName(), 0.0,acq.getSum()));
+              }
+          });
+          balance.sort((o1,o2)->
+              o2.getBalance().compareTo(o1.getBalance())
+          );
+
+        return ResponseEntity.ok().body(balance);
     }
 }

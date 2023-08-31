@@ -81,4 +81,8 @@ public ResponseEntity<?> updateProvider(@PathVariable Integer id,
                                                   @RequestParam("period") Integer period){
         return providerService.getBalance(id,period);
     }
+    @RequestMapping(method = RequestMethod.GET,value="/getTotalBalance")
+    public ResponseEntity<?> getTotalBalance(@RequestParam("period") Integer period){
+        return providerService.getTotalBalance(period);
+    }
 }
