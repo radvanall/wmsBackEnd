@@ -1,15 +1,13 @@
 package com.warehousemanagement.wms.services;
 
-import com.warehousemanagement.wms.dto.CustomerInvoiceDTO;
-import com.warehousemanagement.wms.dto.CustomersSpendingByProduct;
-import com.warehousemanagement.wms.dto.SingleCustomerDTO;
-import com.warehousemanagement.wms.dto.SingleCustomerInvoice;
+import com.warehousemanagement.wms.dto.*;
 import com.warehousemanagement.wms.model.Customer;
 import com.warehousemanagement.wms.repository.CustomerRepository;
 import com.warehousemanagement.wms.utils.CompareFiles;
 import com.warehousemanagement.wms.utils.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -176,5 +176,13 @@ public class CustomerService {
         List<CustomersSpendingByProduct> spendingByProducts=customerRepository
                 .getCustomerSpendingByProduct(id,pageable);
         return spendingByProducts;
+    }
+
+    public ResponseEntity<?> getSales(Integer period) {
+        Calendar monthsAgo = Calendar.getInstance();
+        monthsAgo.add(Calendar.MONTH, -period);
+        Date startDate=monthsAgo.getTime();
+        List<TotalMoneyDTO> sales=customerRepository.getTotalSales(startDate);
+        return ResponseEntity.ok().body(sales);
     }
 }

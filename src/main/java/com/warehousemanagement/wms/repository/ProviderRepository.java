@@ -1,5 +1,6 @@
 package com.warehousemanagement.wms.repository;
 
+import com.warehousemanagement.wms.dto.TotalMoneyDTO;
 import com.warehousemanagement.wms.dto.WeeklySalesDTO;
 import com.warehousemanagement.wms.model.Provider;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -45,4 +46,22 @@ List<WeeklySalesDTO> getWeeklyAcquisitions(@Param("id") Integer id,@Param("start
             "GROUP BY weekStart " +
             "ORDER BY weekStart ")
     List<WeeklySalesDTO> getWeeklySales(@Param("id") Integer id,@Param("startDate") Date startDate);
+
+    @Query("SELECT NEW com.warehousemanagement.wms.dto.TotalMoneyDTO(pr.id,pr.image,pr.providerName,SUM(i.totalPrice) as totalSales) " +
+            "FROM Provider pr " +
+            "INNER JOIN pr.positions p " +
+            "INNER JOIN p.stocks s " +
+            "INNER JOIN s.order o " +
+            "INNER JOIN o.invoice i " +
+            "WHERE i.date>=:startDate " +
+            "GROUP BY pr.id,pr.providerName,pr.image")
+    List<TotalMoneyDTO> getTotalSales(Date startDate);
+
+    @Query("SELECT  NEW com.warehousemanagement.wms.dto.TotalMoneyDTO( " +
+            "p.id,p.image,p.providerName,SUM(s.buyingPrice*s.stockQuantity)) FROM Provider p " +
+            "INNER JOIN p.invoiceReceptions i " +
+            "INNER JOIN i.stocks s " +
+            "WHERE i.dateOfCreation>=:startDate "+
+            "GROUP BY p.id,p.providerName,p.providerName" )
+    List<TotalMoneyDTO> getTotalAcquisitions(Date startDate);
 }

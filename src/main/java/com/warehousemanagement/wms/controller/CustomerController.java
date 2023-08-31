@@ -71,5 +71,9 @@ public class CustomerController {
     public List<CustomersSpendingByProduct> getFavoriteProducts(@PathVariable Integer id){
         return customerService.getFavoriteProducts(id);
     }
+    @RequestMapping(method = RequestMethod.GET,value="/getSales")
+    public ResponseEntity<?> getSales(@RequestParam Integer period){
+        return customerService.getSales(period);
+    }
 
 }

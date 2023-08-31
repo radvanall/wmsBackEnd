@@ -1,6 +1,7 @@
 package com.warehousemanagement.wms.repository;
 
 import com.warehousemanagement.wms.dto.CustomersSpendingByProduct;
+import com.warehousemanagement.wms.dto.TotalMoneyDTO;
 import com.warehousemanagement.wms.model.Customer;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -24,4 +26,13 @@ public interface CustomerRepository extends JpaRepository<Customer,Integer> {
             "GROUP BY p.id, p.name " +
             "ORDER BY SUM(s.sellingPrice * o.quantity) DESC")
     List<CustomersSpendingByProduct> getCustomerSpendingByProduct(@Param("id")Integer id, PageRequest pageable);
+
+    @Query("SELECT NEW com.warehousemanagement.wms.dto.TotalMoneyDTO( " +
+            "c.id,c.avatar,c.nickname,sum(i.totalPrice) as totalSum)  " +
+            "FROM Customer  c " +
+            "INNER JOIN c.invoices i " +
+            "WHERE i.date>=:startDate " +
+            "GROUP BY c.id,c.avatar,c.nickname " +
+            "ORDER BY totalSum DESC")
+    List<TotalMoneyDTO> getTotalSales(Date startDate);
 }
