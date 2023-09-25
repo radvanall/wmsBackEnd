@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,20 +32,50 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
         .csrf().disable().authorizeRequests()
                 .antMatchers("/authenticate").permitAll()
-//                .antMatchers("/api/position/**").hasAnyRole("ROLE_OPERATOR")
+//                .antMatchers("/api/administrator/create",
+//                        "/api/administrator/read/{id}",
+//                        "/api/administrator/readAll",
+//                        "/api/administrator/delete/{id}",
+//                        "/api/administrator/setWorkedHours",
+//                        "/api/administrator/update/{id}",
+//                        "/api/administrator/updateAdmin/{id}",
+//                        "/api/invoiceReception/**").hasRole("MAIN")
+//                .antMatchers("/api/administrator/read/{id}",
+//                        "/api/administrator/update/{id}",
+//                        "/api/administrator/updateAdmin/{id}",
+//                        "/api/invoiceReception/**"
+//                        ).hasRole("ADMIN")
+                .antMatchers("/api/administrator/create",
+                        "/api/administrator/readAll",
+                        "/api/administrator/delete/{id}",
+                        "/api/administrator/setWorkedHours"
+                        ).hasRole("MAIN")
+                .antMatchers("/api/administrator/read/{id}",
+                        "/api/administrator/update/{id}",
+                        "/api/administrator/updateAdmin/{id}",
+                        "/api/invoiceReception/**",
+                        "/api/position/uploadPosition"
+                ).hasAnyRole("ADMIN","MAIN")
+                .antMatchers(
+                        "/api/invoice/create",
+                        "/api/invoice/addOrders",
+                        "/api/invoice/validateInvoice"
+                ).hasRole("OPERATOR")
                 .anyRequest().authenticated()
         .and().sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
     }
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception{
         return super.authenticationManagerBean();
     }
+//    @Bean
+//    public PasswordEncoder getPasswordEncoder() {
+//        return NoOpPasswordEncoder.getInstance();
+//    }
     @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }
+    public PasswordEncoder getPasswordEncoder() { return new BCryptPasswordEncoder();
+   }
 }
