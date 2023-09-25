@@ -11,6 +11,7 @@ import com.warehousemanagement.wms.utils.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +31,8 @@ import java.util.stream.Collectors;
 public class AdministratorService {
     String folder="C:\\Users\\Pc\\Desktop\\js\\prj\\adminend\\admindashboard\\public\\img\\admins\\";
     File avatarImage=new File(folder+"avatar.jpg");
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private AdministratorRepository administratorRepository;
     public AdminWorkDays findDay(List<AdminWorkDays> workDays,Date date){
@@ -94,7 +97,8 @@ public class AdministratorService {
             Administrator administrator=optionalOperator.get();
             System.out.println(password);
             System.out.println(administrator.getPassword());
-            if(!password.equals(administrator.getPassword())) {
+//            if(!password.equals(administrator.getPassword())) {
+            if(!passwordEncoder.matches(password,administrator.getPassword())) {
                 System.out.println(!password.equals(administrator.getPassword()));return "Parola incorectă";};
             return updateAdmin(nickname, name, surname, email, phone, address, imgName, file, administrator);
         }catch (Exception e){
@@ -247,4 +251,20 @@ public class AdministratorService {
         }
     }
 
+    public String changePassword(Integer id, String oldPassword, String newPassword) {
+        try{
+            Optional<Administrator> optionalAdministrator=administratorRepository.findById(id);
+            if(!optionalAdministrator.isPresent()) return "Administratorul nu a fost gasit.";
+            Administrator administrator=optionalAdministrator.get();
+            System.out.println(administrator.getPassword());
+            System.out.println(oldPassword);
+          if(!passwordEncoder.matches(oldPassword,administrator.getPassword())) return "Parolă incorectă";
+  //          if(!oldPassword.equals(administrator.getPassword())) return "Parolă incorectă";
+            administrator.setPassword(passwordEncoder.encode(newPassword));
+            administratorRepository.save(administrator);
+            return "Parola a fost modificată";
+        }  catch (Exception e){
+        return ("An error occurred: " + e.getMessage());
+    }
+    }
 }
