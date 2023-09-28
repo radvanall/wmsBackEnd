@@ -21,10 +21,11 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
 
     @Modifying
     @Transactional
-    @Query( value="INSERT INTO  work.position(name,description,image,unity,subcategory_id,category_id,provider_id,active)" +
-            " VALUES (:name,:description,:image,:unity,:subcategory_id,:category_id,:provider_id,true)",nativeQuery=true)
+    @Query( value="INSERT INTO  work.position(name,description,image,unity,min_quantity,subcategory_id,category_id,provider_id,active)" +
+            " VALUES (:name,:description,:image,:unity,:minQuantity,:subcategory_id,:category_id,:provider_id,true)",nativeQuery=true)
     void insertPosition(@Param("name") String name,@Param("description") String description,
                         @Param("image") String image,@Param("unity") String unity,
+                        @Param("minQuantity") Integer minQuantity,
                         @Param("subcategory_id") Integer subcategory_id,@Param("category_id") Integer category_id,
                         @Param("provider_id")Integer provider_id);
     @Query(nativeQuery=true)
@@ -38,10 +39,13 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
     @Modifying
     @Transactional
     @Query(value="UPDATE work.position SET name=:name,description=:description,image=:image, " +
-            "unity=:unity,subcategory_id=:subcategory_id,category_id=:category_id,provider_id=:provider_id" +
+            "unity=:unity,subcategory_id=:subcategory_id,category_id=:category_id, " +
+            "provider_id=:provider_id, min_quantity=:minQuantity " +
             " WHERE id=:id",nativeQuery=true)
     void updatePosition(@Param("id") Integer id,@Param("name") String name,@Param("description") String description,
-                        @Param("image") String image,@Param("unity") String unity,
+                        @Param("image") String image,
+                        @Param("minQuantity") Integer minQuantity,
+                        @Param("unity") String unity,
                         @Param("subcategory_id") Integer subcategory_id,@Param("category_id") Integer category_id,
                         @Param("provider_id")Integer provider_id);
     @Modifying
@@ -111,9 +115,9 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
             "FROM Position p " +
             "INNER JOIN p.stocks s " +
             "GROUP BY p.id,p.image,p.name,p.unity " +
-            "HAVING SUM(s.remainingQuantity)<=:maxQuantity " +
+            "HAVING SUM(s.remainingQuantity)<=p.minQuantity " +
             "ORDER BY SUM(s.remainingQuantity) ASC")
-    List<RemainingStock> getRemainingStocks(@Param("maxQuantity") Long maxQuantity);
+    List<RemainingStock> getRemainingStocks();
 
 
 //    @Query(value="" +

@@ -40,11 +40,12 @@ public class ProductTableDTO {
     private String producator;
     private String unitate;
     private Integer cantitate;
+    private Integer minQuantity;
 
     public ProductTableDTO() {
     }
 
-    public ProductTableDTO(Integer id, String img, String name, String categorie, String subcategorie, String producator, String unitate,Integer cantitate) {
+    public ProductTableDTO(Integer id, String img, String name, String categorie, String subcategorie, String producator, String unitate,Integer cantitate,Integer minQuantity) {
         this.id = id;
         this.img = img;
         this.name = name;
@@ -53,6 +54,7 @@ public class ProductTableDTO {
         this.producator = producator;
         this.unitate = unitate;
         this.cantitate=cantitate;
+        this.minQuantity=minQuantity;
     }
 
     public Integer getId() {
@@ -117,5 +119,13 @@ public class ProductTableDTO {
 
     public void setCantitate(Integer cantitate) {
         this.cantitate = cantitate;
+    }
+
+    public Integer getMinQuantity() {
+        return minQuantity;
+    }
+
+    public void setMinQuantity(Integer minQuantity) {
+        this.minQuantity = minQuantity;
     }
 }

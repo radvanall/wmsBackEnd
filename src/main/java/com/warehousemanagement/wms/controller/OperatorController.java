@@ -33,6 +33,15 @@ public class OperatorController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
+    @RequestMapping(method = RequestMethod.POST, value="/changePassword/{id}")
+    public ResponseEntity<?> changePassword(@PathVariable Integer id,
+                                            @RequestParam("oldPassword")String oldPassword,
+                                            @RequestParam("newPassword")String newPassword
+    ){
+        String response=operatorService.changePassword(id,oldPassword,newPassword);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
     public List<Operator> getAllOperator(){
         return operatorService.getOperators();

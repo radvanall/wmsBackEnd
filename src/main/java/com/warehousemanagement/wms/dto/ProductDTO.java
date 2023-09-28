@@ -15,6 +15,7 @@ public class ProductDTO {
     private Integer producator;
     private String unitate;
     private String descriere;
+    private Integer minQuantity;
     private String imgName;
 
     public ProductDTO() {
@@ -30,6 +31,22 @@ public class ProductDTO {
         this.producator = producator;
         this.unitate = unitate;
         this.descriere=descriere;
+    }
+
+    public ProductDTO(Integer id, String img, String name,
+                      Integer categorie, Integer subcategorie,
+                      Integer producator,
+                      String unitate, String descriere,
+                      Integer minQuantity) {
+        this.id = id;
+        this.img = img;
+        this.name = name;
+        this.categorie = categorie;
+        this.subcategorie = subcategorie;
+        this.producator = producator;
+        this.unitate = unitate;
+        this.descriere = descriere;
+        this.minQuantity = minQuantity;
     }
 
     public Integer getId() {
@@ -102,6 +119,14 @@ public class ProductDTO {
 
     public void setImgName(String imgName) {
         this.imgName = imgName;
+    }
+
+    public Integer getMinQuantity() {
+        return minQuantity;
+    }
+
+    public void setMinQuantity(Integer minQuantity) {
+        this.minQuantity = minQuantity;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.warehousemanagement.wms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -10,6 +12,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String categoryName;
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id",referencedColumnName = "id")
     private List<Position> positions;
@@ -22,7 +25,9 @@ public class Category {
         this.id = id;
         this.categoryName = categoryName;
     }
-
+    public Category( String categoryName) {
+        this.categoryName = categoryName;
+    }
     public Category(String categoryName, List<Position> positions) {
         this.categoryName = categoryName;
         this.positions = positions;

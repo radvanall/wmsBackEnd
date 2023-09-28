@@ -47,10 +47,11 @@ public class PositionController {
                                  @RequestParam("categorie") String category,
                                  @RequestParam("subcategorie")String subcategory,
                                  @RequestParam("provider")String provider,
+                                 @RequestParam("minQuantity")Integer minQuantity,
                                  @RequestParam("unity")String unity,
                                  @RequestParam("product_description")String productDescription,
                                  @RequestParam("productId")Integer id) throws IOException {
-     String response=  positionService.updatePosition(file,imgName,productName,category,subcategory,provider,unity,productDescription,id);
+     String response=  positionService.updatePosition(file,imgName,productName,category,subcategory,provider,minQuantity,unity,productDescription,id);
           return ResponseEntity.status(HttpStatus.OK)
                   .body(response);
      }
@@ -67,9 +68,10 @@ public class PositionController {
                                          @RequestParam("categorie") String category,
                                          @RequestParam("subcategorie")String subcategory,
                                          @RequestParam("provider")String provider,
+                                         @RequestParam("minQuantity")Integer minQuantity,
                                          @RequestParam("unity")String unity,
                                          @RequestParam("product_description")String productDescription)throws IOException{
-        String uploadImage=positionService.uploadPosition(file,imgName,productName,category,subcategory,provider,unity,productDescription);
+        String uploadImage=positionService.uploadPosition(file,imgName,productName,category,subcategory,provider,minQuantity,unity,productDescription);
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.TEXT_PLAIN);
 //        headers.setCacheControl("no-cache, no-store, must-revalidate");
@@ -117,8 +119,8 @@ public class PositionController {
     }
 
     @RequestMapping(method = RequestMethod.GET,value="/getRemainingStocks")
-    public ResponseEntity<?> getRemainingStocks(@RequestParam("maxQuantity") Long maxQuantity){
-        return positionService.getRemainingStocks(maxQuantity);
+    public ResponseEntity<?> getRemainingStocks(){
+        return positionService.getRemainingStocks();
     }
     @RequestMapping(method = RequestMethod.GET,value="/getTotalBalance")
     public ResponseEntity<?> getTotalBalance (@RequestParam("period") Integer period,

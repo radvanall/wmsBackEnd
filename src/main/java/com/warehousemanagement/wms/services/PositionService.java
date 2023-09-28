@@ -98,6 +98,7 @@ public class PositionService {
 
      public String updatePosition(MultipartFile file,String imgName,String productName,
                            String category,String subcategory,String provider,
+                           Integer minQuantity,
                            String unity, String productDescription,Integer id) throws IOException {
 
        Position position= positionRepository.findById(id).get();
@@ -119,7 +120,7 @@ public class PositionService {
          Files.write(Paths.get(filePath), bytes);
          dbFilePath="/img/products/"+newImgName;
      }
-       positionRepository.updatePosition(id,productName,productDescription,dbFilePath,unity,
+       positionRepository.updatePosition(id,productName,productDescription,dbFilePath,minQuantity,unity,
              Integer.parseInt(subcategory),Integer.parseInt(category),Integer.parseInt(provider));
       return "datele au fost modificate cu success";
 }
@@ -132,7 +133,7 @@ public class PositionService {
         return positionRepository.getTableProductsDTOList();
     }
     public String uploadPosition(MultipartFile file,String imgName,String productName,
-                              String category,String subcategory,String provider,
+                              String category,String subcategory,String provider,Integer minQuantity,
                               String unity, String productDescription) throws IOException {
 
         byte[] bytes = file.getBytes();
@@ -141,6 +142,7 @@ public class PositionService {
         String filePath=folder+imgName;
         Files.write(Paths.get(filePath), bytes);
         positionRepository.insertPosition(productName,productDescription,dbFilePath,unity,
+                minQuantity,
                 Integer.parseInt(subcategory),Integer.parseInt(category),Integer.parseInt(provider));
         if (file!=null){
             return "datele au fost incarcate cu success";
@@ -233,8 +235,8 @@ public class PositionService {
         }
     }
 
-    public ResponseEntity<?> getRemainingStocks(Long maxQuantity) {
-        List<RemainingStock> remainingStocks=positionRepository.getRemainingStocks(maxQuantity);
+    public ResponseEntity<?> getRemainingStocks() {
+        List<RemainingStock> remainingStocks=positionRepository.getRemainingStocks();
         return ResponseEntity.ok().body(remainingStocks);
     }
 

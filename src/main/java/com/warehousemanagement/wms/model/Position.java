@@ -12,13 +12,15 @@ import java.util.List;
 @NamedNativeQuery(
         name = "Position.getTableProductsDTOList",
         query = "select p.id as id ,p.image as img, p.name as name,c.category_name as categorie,s.subcategory_name as subcategorie," +
-                "pr.provider_name as producator,p.unity as unitate, SUM(st.remaining_quantity) as cantitate  from work.position p inner join work.provider pr on p.provider_id=pr.id inner join " +
-                "work.subcategory s on p.subcategory_id=s.id inner join work.category c on p.category_id=c.id  inner join work.stock st " +
+                "pr.provider_name as producator,p.unity as unitate,  COALESCE(SUM(st.remaining_quantity), 0) as cantitate,  " +
+                "p.min_quantity as minQuantity from work.position p inner join work.provider pr on p.provider_id=pr.id inner join " +
+                "work.subcategory s on p.subcategory_id=s.id inner join work.category c on p.category_id=c.id  left join work.stock st " +
                 "on st.position_id=p.id where p.active=true group by  p.id, " +
                 "    p.image, " +
                 "    p.name, " +
                 "    c.category_name, " +
                 "    s.subcategory_name, " +
+                "    p.min_quantity, " +
                 "    pr.provider_name, " +
                 "    p.unity order by p.id",
         resultSetMapping = "ProductTableDTO"
@@ -36,7 +38,8 @@ import java.util.List;
                         @ColumnResult(name="subcategorie",type=String.class),
                         @ColumnResult(name="producator",type=String.class),
                         @ColumnResult(name="unitate",type=String.class),
-                        @ColumnResult(name="cantitate",type=Integer.class)
+                        @ColumnResult(name="cantitate",type=Integer.class),
+                        @ColumnResult(name="minQuantity",type=Integer.class)
 
                 }
         )
@@ -44,7 +47,8 @@ import java.util.List;
 @NamedNativeQuery(
         name = "Position.getProductById",
         query = "select p.id as id ,p.image as img, p.name as name,p.category_id as categorie,p.subcategory_id as subcategorie, " +
-                " p.provider_id as producator,p.unity as unitate,p.description as descriere  from work.position p where p.id=:id ",
+                " p.provider_id as producator,p.unity as unitate,p.description as descriere, p.min_quantity as minQuantity " +
+                " from work.position p where p.id=:id ",
         resultSetMapping = "ProductDTO"
 )
 
@@ -61,6 +65,7 @@ import java.util.List;
                         @ColumnResult(name="producator",type=Integer.class),
                         @ColumnResult(name="unitate",type=String.class),
                         @ColumnResult(name="descriere",type=String.class),
+                        @ColumnResult(name="minQuantity",type=Integer.class),
                 }
         )
 )
@@ -112,6 +117,7 @@ public class Position {
     private String description;
     private String image;
     private String unity;
+    private Integer minQuantity;
     private boolean active;
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL} ,mappedBy="position")
@@ -184,6 +190,23 @@ public class Position {
 
     }
 
+    public Position(Integer id, String name, String description,
+                    String image, String unity, Integer minQuantity,
+                    boolean active, List<Stock> stocks, Provider provider,
+                    Category category, Subcategory subcategory) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.image = image;
+        this.unity = unity;
+        this.minQuantity = minQuantity;
+        this.active = active;
+        this.stocks = stocks;
+        this.provider = provider;
+        this.category = category;
+        this.subcategory = subcategory;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -251,6 +274,14 @@ public class Position {
 //        this.stocks = position.stocks;
         this.unity=position.unity;
 
+    }
+
+    public Integer getMinQuantity() {
+        return minQuantity;
+    }
+
+    public void setMinQuantity(Integer minQuantity) {
+        this.minQuantity = minQuantity;
     }
 
     public Provider getProvider() {

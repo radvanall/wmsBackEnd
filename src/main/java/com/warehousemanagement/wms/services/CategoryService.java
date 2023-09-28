@@ -16,8 +16,14 @@ public class CategoryService {
     @Autowired
     private PositionRepository positionRepository;
 
-    public void setCategory(List<Category> categoryList) {
-            categoryRepository.saveAll(categoryList);
+    public String setCategory(String categoryName) {
+        try {
+            Category category=new Category(categoryName);
+            categoryRepository.save(category);
+            return "Categoria a fost salvată";
+        }catch (Exception e){
+            return "An error occurred: " + e.getMessage();
+        }
         }
         public List<Category> getCategories(){
             return categoryRepository.findAll();
@@ -25,10 +31,15 @@ public class CategoryService {
         public Category getCategory(Integer id){
             return categoryRepository.findById(id).get();
         }
-        public void updateCategory(Category category,Integer id){
-            Category getCategory=categoryRepository.findById(id).get();
-            getCategory.setCategoryName(category.getCategoryName());
+        public String updateCategory(String categoryName,Integer id){
+        try {
+            Category getCategory = categoryRepository.findById(id).get();
+            getCategory.setCategoryName(categoryName);
             categoryRepository.save(getCategory);
+            return "Categoria a fost modificată.";
+        }catch(Exception e){
+            return "Erorare " + e.getMessage();
+         }
         }
 
     public void addPosition(Integer positionId, Integer categoryId) {
@@ -36,6 +47,19 @@ public class CategoryService {
         Position getPosition=positionRepository.findById(positionId).get();
         getCategory.addPositions(getPosition);
         categoryRepository.save(getCategory);
+    }
+
+    public String deleteCategory(Integer id) {
+        try {
+            Category category=categoryRepository.findById(id).get();
+           if(!category.getPositions().isEmpty()){
+               return "Categoria nu poate fi ștearsă deoarece există produse care fac referință la aceasta.";
+           };
+           categoryRepository.deleteById(id);
+           return "Categoria a fost ștearsă";
+        }catch (Exception e){
+            return "Probleme la conectare";
+        }
     }
 }
 

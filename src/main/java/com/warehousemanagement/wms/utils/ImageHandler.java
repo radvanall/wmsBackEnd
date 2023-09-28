@@ -14,10 +14,11 @@ public class ImageHandler {
             if(!contains) imgName=imgName+".jpg";
         }
         else if(imgParts.length<=1){imgName=imgName+".jpg";}
-        File check=new File(folder+imgName);
-        if(check.exists()){
+//        File check=new File(folder+imgName);
+//        if(check.exists()){
             long now = java.time.Instant.now().getEpochSecond();
-            imgName=now+imgName;}
+            imgName=now+imgName;
+//    }
         return imgName;
     }
 }

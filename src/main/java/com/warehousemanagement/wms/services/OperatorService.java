@@ -2,6 +2,7 @@ package com.warehousemanagement.wms.services;
 
 import com.warehousemanagement.wms.dto.*;
 import com.warehousemanagement.wms.model.*;
+import com.warehousemanagement.wms.repository.AdministratorRepository;
 import com.warehousemanagement.wms.repository.InvoiceRepository;
 import com.warehousemanagement.wms.repository.OperatorRepository;
 import com.warehousemanagement.wms.utils.CompareDateDMY;
@@ -11,6 +12,7 @@ import com.warehousemanagement.wms.utils.ImageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +30,11 @@ public class OperatorService {
     String folder="C:\\Users\\Pc\\Desktop\\js\\prj\\adminend\\admindashboard\\public\\img\\operators\\";
     File avatarImage=new File(folder+"avatar.jpg");
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private OperatorRepository operatorRepository;
+    @Autowired
+    private AdministratorRepository administratorRepository;
     public OperatorWorkDays findDay(List<OperatorWorkDays> workDays,Date date){
         for(OperatorWorkDays workDay:workDays){
             if(CompareDateDMY.compareDates(workDay.getData(),date)){
@@ -172,6 +178,10 @@ public class OperatorService {
                               MultipartFile file) {
         try {
 //            System.out.println(nickname + imgName + phone + address + email);
+            Optional<Operator> existingOperator=operatorRepository.findByNickname(nickname);
+            if(existingOperator.isPresent()) return "Operator cu așa nickname există.";
+            Optional<Administrator> existingAdministrator=administratorRepository.findByNickname(nickname);
+            if(existingAdministrator.isPresent()) return "Administrator cu așa nickname există.";
             ImageHandler imageHandler = new ImageHandler();
             byte[] bytes = file.getBytes();
             if(imgName.isEmpty()){
@@ -187,7 +197,7 @@ public class OperatorService {
 //            String filePath = folder + imgName;
 //            Files.write(Paths.get(filePath), bytes);
             Operator operator = new Operator(nickname,
-                    "1111",
+                    passwordEncoder.encode("11111"),
                     dbFilePath,
                     email.isEmpty() ? "--" : email,
                     phone,
@@ -240,6 +250,7 @@ public class OperatorService {
             operator.setSurname(surname);
             operator.setPhone(phone);
             operator.setAddress(address);
+            operator.setEmail(email);
             operator.setAvatar(dbFilePath);
             operatorRepository.save(operator);
 
@@ -268,6 +279,21 @@ public class OperatorService {
 
         }catch (Exception e) {
             return "An error occurred: " + e.getMessage();
+        }
+    }
+
+    public String changePassword(Integer id, String oldPassword, String newPassword) {
+        try{
+            Optional<Operator> optionalOperator=operatorRepository.findById(id);
+            if(!optionalOperator.isPresent()) return "Operatorul nu a fost gasit.";
+            Operator operator=optionalOperator.get();
+          if(!passwordEncoder.matches(oldPassword,operator.getPassword())) return "Parolă incorectă";
+         // if(!oldPassword.equals(operator.getPassword())) return "Parolă incorectă";
+            operator.setPassword(passwordEncoder.encode(newPassword));
+            operatorRepository.save(operator);
+            return "Parola a fost modificată";
+        }  catch (Exception e){
+            return ("An error occurred: " + e.getMessage());
         }
     }
 }

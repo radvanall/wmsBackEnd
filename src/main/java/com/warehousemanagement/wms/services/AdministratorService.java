@@ -1,10 +1,18 @@
 package com.warehousemanagement.wms.services;
 
+
+
+import com.google.cloud.ReadChannel;
+
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import com.warehousemanagement.wms.dto.AdministratorDTO;
 import com.warehousemanagement.wms.dto.OperatorTableDTO;
 import com.warehousemanagement.wms.dto.WorkDaysDTO;
 import com.warehousemanagement.wms.model.*;
 import com.warehousemanagement.wms.repository.AdministratorRepository;
+import com.warehousemanagement.wms.repository.OperatorRepository;
 import com.warehousemanagement.wms.utils.CompareDateDMY;
 import com.warehousemanagement.wms.utils.CompareFiles;
 import com.warehousemanagement.wms.utils.ImageHandler;
@@ -17,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -34,7 +43,11 @@ public class AdministratorService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
+    private OperatorRepository operatorRepository;
+    @Autowired
     private AdministratorRepository administratorRepository;
+    @Autowired
+    private Storage storage;
     public AdminWorkDays findDay(List<AdminWorkDays> workDays,Date date){
         for(AdminWorkDays workDay:workDays){
             if(CompareDateDMY.compareDates(workDay.getData(),date)){
@@ -57,6 +70,19 @@ public class AdministratorService {
                     admin.getPhone(),admin.getStatus()
             ));
         }
+//        StringBuilder sb=new StringBuilder();
+//        try(ReadChannel channel =storage.reader("wmsstorage","linkpowershell.txt")){
+//            ByteBuffer bytes=ByteBuffer.allocate(64*1024);
+//            while(channel.read(bytes)>0){
+//                bytes.flip();
+//                String data=new String(bytes.array(),0,bytes.limit());
+//                sb.append(data);
+//                bytes.clear();
+//            }
+//            System.out.println("stirngtext:"+sb.toString());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return administratorsDTOS;
     }
     public ResponseEntity<?> getAdministrator(Integer id){
@@ -113,13 +139,22 @@ public class AdministratorService {
         try {
 //            System.out.println(nickname + imgName + phone + address + email);
             ImageHandler imageHandler = new ImageHandler();
+            Optional<Operator> existingOperator=operatorRepository.findByNickname(nickname);
+            if(existingOperator.isPresent()) return "Operator cu așa nickname există.";
+            Optional<Administrator> existingAdministrator=administratorRepository.findByNickname(nickname);
+            if(existingAdministrator.isPresent()) return "Administrator cu așa nickname există.";
             byte[] bytes = file.getBytes();
             if(imgName.isEmpty()){
                 imgName="avatar.jpg";
             } else{
                 imgName=imageHandler.setImgName(imgName, folder);
-                String filePath = folder + imgName;
-                Files.write(Paths.get(filePath), bytes);
+                long now = java.time.Instant.now().getEpochSecond();
+                String filePath = folder + imgName+now;
+//                Files.write(Paths.get(filePath), bytes);
+                BlobId blobId=BlobId.of("wmsstorage","img/admins/"+imgName);
+                BlobInfo blobInfo=BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
+//                BlobInfo blobInfo=BlobInfo.newBuilder(blobId).build();
+                storage.create(blobInfo,bytes);
             }
 
 
@@ -127,7 +162,7 @@ public class AdministratorService {
 //            String filePath = folder + imgName;
 //            Files.write(Paths.get(filePath), bytes);
             Administrator administrator = new Administrator(nickname,
-                    "1111",
+                    passwordEncoder.encode("11111"),
                     dbFilePath,
                     email.isEmpty() ? "--" : email,
                     phone,

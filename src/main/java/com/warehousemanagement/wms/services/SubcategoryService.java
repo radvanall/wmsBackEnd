@@ -17,8 +17,14 @@ public class SubcategoryService {
     private SubcategoryRepository subcategoryRepository;
     @Autowired
     private PositionRepository positionRepository;
-    public void setSubcategory(List<Subcategory> subcategory){
-        subcategoryRepository.saveAll(subcategory);
+    public String setSubcategory(String subcategoryName){
+        try {
+            Subcategory subcategory=new Subcategory(subcategoryName);
+            subcategoryRepository.save(subcategory);
+            return "Subcategoria a fost salvată";
+        }catch (Exception e){
+            return "An error occurred: " + e.getMessage();
+        }
     }
     public List<Subcategory> getSubcategories(){
        return subcategoryRepository.findAll();
@@ -26,10 +32,15 @@ public class SubcategoryService {
     public Subcategory getSubcategory(Integer id){
         return subcategoryRepository.findById(id).get();
     }
-    public void updateSubcategory(Subcategory subcategory,Integer id){
-       Subcategory getSubcategory=subcategoryRepository.findById(id).get();
-       getSubcategory.setSubcategoryName(subcategory.getSubcategoryName());
-       subcategoryRepository.save(getSubcategory);
+    public String updateSubcategory(String subcategoryName,Integer id){
+        try {
+            Subcategory getSubcategory = subcategoryRepository.findById(id).get();
+            getSubcategory.setSubcategoryName(subcategoryName);
+            subcategoryRepository.save(getSubcategory);
+            return "Subcategoria a fost modificată.";
+        }catch(Exception e){
+            return "Erorare " + e.getMessage();
+        }
     }
 
     public void addPosition(Integer positionId, Integer subcategoryId) {
@@ -37,5 +48,18 @@ public class SubcategoryService {
         Position getPosition=positionRepository.findById(positionId).get();
         getSubcategory.addPositions(getPosition);
         subcategoryRepository.save(getSubcategory);
+    }
+
+    public String deleteSubcategory(Integer id) {
+        try {
+            Subcategory subcategory=subcategoryRepository.findById(id).get();
+            if(!subcategory.getPositions().isEmpty()){
+                return "Subcategoria nu poate fi ștearsă deoarece există produse care fac referință la aceasta.";
+            };
+            subcategoryRepository.deleteById(id);
+            return "Subcategoria a fost ștearsă";
+        }catch (Exception e){
+            return "Probleme la conectare";
+        }
     }
 }
