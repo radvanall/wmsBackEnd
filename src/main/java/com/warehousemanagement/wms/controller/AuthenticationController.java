@@ -38,7 +38,6 @@ public class AuthenticationController {
             );
         } catch (BadCredentialsException e) {
             System.out.println("Incorrect username or password"+ e);
-//            throw new Exception("Incorrect username or password", e);
             return ResponseEntity.badRequest().body("Nickname-ul sau parola este incorectă");
         }catch (Exception ex){
             System.out.println("Incorrect "+ ex);
@@ -51,6 +50,5 @@ public class AuthenticationController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt,userDetails.getUsername(),
                 userDetails.getAvatar(),userDetails.getId(),
                 userDetails.getAuthorities().stream().findFirst().get().toString()));
-//        return ResponseEntity.ok(authenticationRequest);
     }
 }

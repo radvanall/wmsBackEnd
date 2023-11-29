@@ -39,14 +39,6 @@ public class JwtUtil {
         claimRoles=claimRoles.replace("[","").replace("]","");
         String[] roleNames=claimRoles.split(",");
         return roleNames;
-
-//        String subject=(String)claims.get(Claims.SUBJECT);
-//        String[] roles=subject.split(",");
-//        List<String> roles = (List<String>) claims.get("roles");
-
-//        return roles.stream()
-//                .map(SimpleGrantedAuthority::new)
-//                .collect(Collectors.toList());
     }
 
     private Boolean isTokenExpired(String token) {
@@ -62,22 +54,14 @@ public class JwtUtil {
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+ //               .setExpiration(new Date(System.currentTimeMillis() + 1000 * 20))
+               .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
     public Boolean validateToken(String token, NewUserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-//        final String username = extractUsername(token);
-//        final String[] rolesFromToken = extractRoles(token);
-//        for (String aRoleName:rolesFromToken){
-//            userDetails.addRole(aRoleName);
-//        }
-//        final List<GrantedAuthority> rolesFromUserDetails = (List<GrantedAuthority>) userDetails.getAuthorities();
-//        return (username.equals(userDetails.getUsername()) &&
-//                !isTokenExpired(token) &&
-//                rolesFromToken.containsAll(rolesFromUserDetails));
-//    }
+
     }
 }

@@ -32,19 +32,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
         .csrf().disable().authorizeRequests()
                 .antMatchers("/authenticate").permitAll()
-//                .antMatchers("/api/administrator/create",
-//                        "/api/administrator/read/{id}",
-//                        "/api/administrator/readAll",
-//                        "/api/administrator/delete/{id}",
-//                        "/api/administrator/setWorkedHours",
-//                        "/api/administrator/update/{id}",
-//                        "/api/administrator/updateAdmin/{id}",
-//                        "/api/invoiceReception/**").hasRole("MAIN")
-//                .antMatchers("/api/administrator/read/{id}",
-//                        "/api/administrator/update/{id}",
-//                        "/api/administrator/updateAdmin/{id}",
-//                        "/api/invoiceReception/**"
-//                        ).hasRole("ADMIN")
                 .antMatchers("/api/administrator/create",
                         "/api/administrator/readAll",
                         "/api/administrator/delete/{id}",
@@ -71,10 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception{
         return super.authenticationManagerBean();
     }
-//    @Bean
-//    public PasswordEncoder getPasswordEncoder() {
-//        return NoOpPasswordEncoder.getInstance();
-//    }
+
     @Bean
     public PasswordEncoder getPasswordEncoder() { return new BCryptPasswordEncoder();
    }
