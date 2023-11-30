@@ -21,14 +21,7 @@ import java.util.Map;
 public class InvoiceReceptionController {
     @Autowired
     private InvoiceReceptionService invoiceReceptionService;
-//    @RequestMapping(method = RequestMethod.POST, value="/create")
-//    public void addInvoiceReception(@RequestBody List<InvoiceReception> invoiceReceptionsList){
-//        invoiceReceptionService.setInvoiceReception(invoiceReceptionsList);
-//    }
-//@RequestMapping(method = RequestMethod.POST, value="/create")
-//public void addInvoice(@RequestBody List<InvoiceStockDTO> invoiceStockDTOList){
-//    invoiceReceptionService.setInvoiceReception(invoiceStockDTOList);
-//}
+
     @RequestMapping(method = RequestMethod.POST, value="/create")
     public ResponseEntity<?> addInvoice(@RequestParam("data") String  data,
                                         @RequestParam("providerId") Integer providerId,

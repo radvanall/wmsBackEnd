@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-//@CrossOrigin("*")
 @RestController
 @RequestMapping("api/operator")
 public class OperatorController {

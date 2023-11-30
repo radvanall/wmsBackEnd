@@ -32,9 +32,6 @@ public class ProviderController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
-//    public void addProvider(@RequestBody List<Provider> providerList){
-//        providerService.setProvider(providerList);
-//    }
     @RequestMapping(method = RequestMethod.GET, value="/readAll")
     public List<Provider> getAllProviders(){
         return providerService.getProviders();
@@ -48,10 +45,6 @@ public class ProviderController {
         return providerService.getProvider(id);
 
     }
-//    @RequestMapping(method = RequestMethod.PUT, value="/update/{id}")
-//    public void updateProvider(@RequestBody Provider provider,@PathVariable Integer id){
-//        providerService.updateProvider(provider,id);
-//    }
 @RequestMapping(method = RequestMethod.POST, value="/update/{id}")
 public ResponseEntity<?> updateProvider(@PathVariable Integer id,
         @RequestParam("providerName")String providerName,

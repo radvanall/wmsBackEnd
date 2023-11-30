@@ -72,11 +72,6 @@ public class PositionController {
                                          @RequestParam("unity")String unity,
                                          @RequestParam("product_description")String productDescription)throws IOException{
         String uploadImage=positionService.uploadPosition(file,imgName,productName,category,subcategory,provider,minQuantity,unity,productDescription);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.TEXT_PLAIN);
-//        headers.setCacheControl("no-cache, no-store, must-revalidate");
-
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(uploadImage);
     }
@@ -92,19 +87,8 @@ public class PositionController {
     }
     @RequestMapping(method = RequestMethod.GET,value="/readproduct/{id}")
     public ProductDTO getProduct(@PathVariable  Integer id) throws IOException {
-//    public MultipartFile getProduct(@PathVariable  Integer id) throws IOException {
-       // LinkedMultiValueMap<String, Object> map=positionService.getProduct(id);
-//        byte[] map=positionService.getProduct(id);
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.valueOf("image/jpeg"))
-//                .body(map);
-//        return positionService.getProduct(id);
         ProductDTO productDTO=positionService.getProduct(id);
         HttpHeaders headers = new HttpHeaders();
-       // headers.setContentType(MediaType.IMAGE_JPEG);
-       // headers.setContentLength(productDTO.getImage().length);
-//        return new ResponseEntity<>(productDTO, headers, HttpStatus.OK);
-//        return new ResponseEntity<>(productDTO, HttpStatus.OK);
         return productDTO;
 
     }
@@ -127,10 +111,6 @@ public class PositionController {
                                                 @RequestParam("criteria") Integer criteria){
         return positionService.getTotalBalance(period,criteria);
     }
-//    @RequestMapping(method = RequestMethod.GET,value="/getTopSales")
-//    public ResponseEntity<?> getTopSales (@RequestParam("period") Integer period){
-//        return positionService.getTopSales(period);
-//    }
     @RequestMapping(method = RequestMethod.GET,value="/getTopBalance")
     public ResponseEntity<?> getTopBalance(@RequestParam("period") Integer period,
                                            @RequestParam("nrOfPositions") Integer nrOfPositions){
