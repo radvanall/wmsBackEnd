@@ -24,7 +24,6 @@ public class Customer {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.DETACH,
             CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},mappedBy = "customer")
-//    @JoinColumn(name="customer_id",referencedColumnName ="id")
     private List<Invoice> invoices;
 
     public Customer() {

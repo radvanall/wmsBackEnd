@@ -17,9 +17,6 @@ public class Invoice {
     private Boolean shipped;
     private String address;
     private Double totalPrice;
-//    @OneToMany(fetch = FetchType.LAZY)
-//    @JoinColumn(name="invoice_id",referencedColumnName ="id")
-//    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL} ,mappedBy="invoice")
 @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE}, mappedBy="invoice")
     private List<Order> order;
     @ManyToOne(fetch = FetchType.EAGER)

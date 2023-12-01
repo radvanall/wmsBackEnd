@@ -21,7 +21,7 @@ public class Operator {
     @OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.DETACH,
             CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},
              mappedBy = "operator")
-//    @JoinColumn(name="operator_id",referencedColumnName ="id")
+
     private List<Invoice> invoices;
     @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name="operator_id", referencedColumnName ="id" )

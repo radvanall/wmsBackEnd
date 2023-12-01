@@ -15,10 +15,6 @@ import java.util.List;
 @Repository
 public interface PositionRepository extends JpaRepository<Position,Integer> {
 
-//    @Query(value="select p.id as id ,p.image as img, p.name as name,c.category_name as categorie,s.subcategory_name as subcategorie," +
-//            "pr.provider_name as producator,p.unity as unitate  from work.position p inner join work.provider pr on p.provider_id=pr.id inner join " +
-//            "work.subcategory s on p.subcategory_id=s.id inner join work.category c on p.category_id=c.id",nativeQuery=true)
-
     @Modifying
     @Transactional
     @Query( value="INSERT INTO  work.position(name,description,image,unity,min_quantity,subcategory_id,category_id,provider_id,active)" +
@@ -31,9 +27,6 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
     @Query(nativeQuery=true)
     List<ProductTableDTO>getTableProductsDTOList();
 
-//    @Query(value="select p.id as id ,p.image as img, p.name as name,c.category_name as categorie,s.subcategory_name as subcategorie, " +
-//            " pr.provider_name as producator,p.unity as unitate,p.description as description  from work.position p inner join work.provider pr on p.provider_id=pr.id inner join \n" +
-//            " work.subcategory s on p.subcategory_id=s.id inner join work.category c on p.category_id=c.id where p.id=:id",nativeQuery=true)
     @Query(nativeQuery=true)
     ProductDTO getProductById(@Param("id") Integer id);
     @Modifying
@@ -119,27 +112,6 @@ public interface PositionRepository extends JpaRepository<Position,Integer> {
             "ORDER BY SUM(s.remainingQuantity) ASC")
     List<RemainingStock> getRemainingStocks();
 
-
-//    @Query(value="" +
-//            "SELECT NEW com.warehousemanagement.wms.dto.TopSalesDTO(t.id,  t.name, t.date, sum(t.sum) AS weekly_sum) " +
-//            "FROM ( " +
-//            "  SELECT p.id, p.name, date_trunc('week', i.date) AS date, sum(o.quantity * s.selling_price) AS sum " +
-//            "  FROM work.position p " +
-//            "  INNER JOIN work.stock s ON s.position_id = p.id " +
-//            "  INNER JOIN work.order o ON o.stock_id = s.id " +
-//            "  INNER JOIN work.invoice i ON i.id = o.invoice_id " +
-//            "  GROUP BY p.name, date, i.date,p.id " +
-//            ") AS t " +
-//            " where t.id in ( " +
-//            "SELECT m.id from (SELECT p.id, sum(total_price) as total_price from work.position p inner join " +
-//            " work.stock s on s.position_id=p.id " +
-//            "inner join work.order o on o.stock_id=s.id " +
-//            "inner join work.invoice i on i.id=o.invoice_id " +
-//            " group by p.id " +
-//            " order by total_price desc limit 2) as m " +
-//            " ) " +
-//            "GROUP BY t.name, t.date,t.id " +
-//            "ORDER BY t.date ;",nativeQuery=true)
 @Query(nativeQuery=true)
     List<TopSalesDTO> getTopSales(@Param("startDate") Date startDate);
 

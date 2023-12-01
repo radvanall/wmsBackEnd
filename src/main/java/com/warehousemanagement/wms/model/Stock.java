@@ -20,7 +20,6 @@ public class Stock {
     private String state;
 
     @OneToMany(fetch = FetchType.LAZY ,mappedBy="stock")
-//    @JoinColumn(name = "stock_id",referencedColumnName = "id")
     private List<Order> order;
 
     @ManyToOne(fetch = FetchType.EAGER)

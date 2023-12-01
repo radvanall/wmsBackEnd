@@ -20,9 +20,6 @@ public class FilterProviderDTO {
         }
 
     }
-
-
-
     public Integer getId() {
         return id;
     }

@@ -121,7 +121,6 @@ public class Position {
     private boolean active;
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL} ,mappedBy="position")
-//    @JoinColumn(name = "position_id",referencedColumnName = "id")
     private List<Stock> stocks;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)

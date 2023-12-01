@@ -64,14 +64,6 @@ public class InvoiceReception {
     public void setId(Integer id) {
         this.id = id;
     }
-//
-//    public Date getData() {
-//        return dateOfCreation;
-//    }
-//
-//    public void setData(Date dateOfCreation) {
-//        this.dateOfCreation = dateOfCreation;
-//    }
 
     public List<Stock> getStocks() {
         return stocks;
@@ -88,15 +80,15 @@ public class InvoiceReception {
     public void setValidated(Boolean validated) {
         this.validated = validated;
     }
-//    @JsonIgnore
+
     public Administrator getCreatedBy() {
         return createdBy;
     }
-//    @JsonIgnore
+
     public void setCreatedBy(Administrator createdBy) {
         this.createdBy = createdBy;
     }
-//    @JsonIgnore
+
 
     public Administrator getValidatedBy() {
         return validatedBy;
@@ -109,7 +101,7 @@ public class InvoiceReception {
     public Provider getProvider() {
         return provider;
     }
-//    @JsonIgnore
+
     public void setProvider(Provider provider) {
         this.provider = provider;
     }
