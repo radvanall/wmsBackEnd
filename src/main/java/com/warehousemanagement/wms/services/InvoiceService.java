@@ -89,8 +89,6 @@ public class InvoiceService {
              invoice.setCustomer(customer);
              invoice.setOperator(operator);
              invoice.setDate(invoicesList.getDate());
-//            Invoice invoice = new Invoice(invoicesList.getAddress(), orders,
-//                    totalPrice, invoicesList.getShipped(), operator,invoicesList.getDate(),customer);
             invoiceRepository.save(invoice);
             System.out.println("Invoice:"+invoice.toString());
             System.out.println("invoice:"+invoice);
@@ -103,9 +101,6 @@ public class InvoiceService {
 
     public List<InvoiceTableDataDTO> getInvoices() {
         List<Invoice> invoices=invoiceRepository.findAll();
-//        if(invoices.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nu exista facturi.");
-//        }
         List<InvoiceTableDataDTO> invoiceTableDataDTOS=invoices.stream().map(invoice ->
                 new InvoiceTableDataDTO(invoice.getId(),invoice.getCustomer().getAvatar(),
                        invoice.getCustomer().getNickname(), invoice.getDate(),
@@ -157,15 +152,12 @@ public class InvoiceService {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
-
-        //        invoiceRepository.deleteById(id);
     }
 
 
     public ResponseEntity<String> deleteOrder(Integer id) {
         try {
             Order order = orderRepository.findById(id).get();
-//            Stock stock = order.getStock();
             List<Stock> stocks=new ArrayList<>();
             Invoice invoice = order.getInvoice();
             List<Order> ordersToDelete=new ArrayList<>();
@@ -194,21 +186,6 @@ public class InvoiceService {
                 orderRepository.delete(orderToDelete);
                System.out.println("Orders:"+ orderToDelete.toString());
             });
-
-//            stock.setRemainingQuantity(order.getQuantity() + stock.getRemainingQuantity());
-//            if (stock.getRemainingQuantity() == stock.getStockQuantity()) {
-//                stock.setState("forSale");
-//            } else stock.setState("inSale");
-//            Double newTotalPrice = invoice.getTotalPrice() - (Double.valueOf(order.getQuantity()) *
-//                    order.getStock().getSellingPrice());
-//            invoice.setTotalPrice(newTotalPrice);
-//            System.out.println(order.getId());
-//            System.out.println(invoice.getId());
-//            System.out.println(stock.getId());
-
-//            invoiceRepository.save(invoice);
-//            stockRepository.save(stock);
-//            orderRepository.delete(order);
         }  catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
@@ -231,8 +208,6 @@ public class InvoiceService {
                   if(order.getStock().getId()==orderDTO.getStockId()){
                       if(order.getStock().getRemainingQuantity()>=orderDTO.getQuantity()){
                           totalPrice+=orderDTO.getQuantity()*order.getStock().getSellingPrice();
-//                          Stock stock =order.getStock();
-//                          stock.setRemainingQuantity(stock.getRemainingQuantity()-orderDTO.getQuantity());
                           order.getStock().setRemainingQuantity(order.getStock().getRemainingQuantity()-orderDTO.getQuantity());
                           if(order.getStock().getRemainingQuantity()==0) order.getStock().setState("soldOut");
                           order.setQuantity(order.getQuantity()+orderDTO.getQuantity());
@@ -307,9 +282,6 @@ public class InvoiceService {
 
     public List<InvoiceTableDataDTO> getPendingOrders() {
         List<Invoice> invoices=invoiceRepository.findAll();
-//        if(invoices.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nu exista facturi.");
-//        }
         List<InvoiceTableDataDTO> invoiceTableDataDTOS=invoices.stream().filter(item->!item.getShipped()).map(invoice ->
                 new InvoiceTableDataDTO(invoice.getId(),invoice.getCustomer().getAvatar(),
                         invoice.getCustomer().getNickname(), invoice.getDate(),

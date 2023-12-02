@@ -35,7 +35,6 @@ public class StockService {
         }
         Sort sortByDateOfCreation=Sort.by(direction,"invoiceReception.dateOfCreation");
         Pageable pageable= PageRequest.of(page,size,sortByDateOfCreation);
-//        Page<Stock> stockPage = stockRepository.findAll(pageable);
         Page<Stock> stockPage;
         if(filterCriteriaDTO==null){
             System.out.println("object is null");
@@ -57,12 +56,6 @@ public class StockService {
                 pageable
         );
         }
-
-        if (!stockPage.hasContent()) {
-            System.out.println("stockPage:"+stockPage.toString());
-//            throw new NoSuchElementException("Requested page does not exist");
-        }
-
        List<StockCardDTO> stockCardDTOS=  stockPage.getContent().stream()
                 .map(stock -> new StockCardDTO(stock.getId(),
                         stock.getPosition().getName(),

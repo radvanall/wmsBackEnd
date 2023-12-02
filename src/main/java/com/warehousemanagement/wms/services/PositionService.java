@@ -83,19 +83,12 @@ public class PositionService {
     public void setPosition(List<Position> positionList) {
         positionRepository.saveAll(positionList);
     }
-
     public List<Position> getPositions() {
         List<Position> positions=positionRepository.findAll();
-//        for(Position position:positions){
-//            System.out.println("positions="+position.getStocks());
-//        }
-
         return positions;
     }
-
     public Position getPosition(Integer id) {return  positionRepository.findById(id).get();
     }
-
      public String updatePosition(MultipartFile file,String imgName,String productName,
                            String category,String subcategory,String provider,
                            Integer minQuantity,
@@ -126,7 +119,6 @@ public class PositionService {
 }
     public void createProduct(Integer id) {
         Position getPosition=positionRepository.findById(id).get();
-//        getPosition.createStock();
         positionRepository.save(getPosition);
     }
     public List<ProductTableDTO> getTableProducts(){
@@ -239,18 +231,6 @@ public class PositionService {
         List<RemainingStock> remainingStocks=positionRepository.getRemainingStocks();
         return ResponseEntity.ok().body(remainingStocks);
     }
-
-
-//    public ResponseEntity<?> getTopSales(Integer period) {
-//        Calendar monthsAgo = Calendar.getInstance();
-//        monthsAgo.add(Calendar.MONTH, -period);
-//        Date startDate=monthsAgo.getTime();
-//        List<TopSalesDTO> topSalesDTOS=positionRepository.getTopSales(startDate);
-//        List<ProductsWeeklySalesDTO> productSales=getProductWeeklyData(topSalesDTOS);
-//        return  ResponseEntity.ok().body(productSales);
-//
-//    }
-
     public ResponseEntity<?> getTopBalance(Integer period,Integer nrOfPositions) {
         Calendar monthsAgo = Calendar.getInstance();
         monthsAgo.add(Calendar.MONTH, -period);
@@ -263,23 +243,12 @@ public class PositionService {
                 System.out.println(item.toString()));
         List<ProductsWeeklySalesDTO> productSales=getProductWeeklyData(topSalesDTOS);
         List<ProductsWeeklySalesDTO> productAcquisitions=getProductWeeklyData(topAcquisitionsDTOS);
-//        List<ProductsWeeklySalesDTO> productBalance=new ArrayList<>();
         List<ProductWeeklySalesAndAcquisitions> productBalance=new ArrayList<>();
 
         for(ProductsWeeklySalesDTO productAcquisition:productAcquisitions){
             for(ProductsWeeklySalesDTO productSale:productSales){
                 if(productAcquisition.getId().equals(productSale.getId())){
-//                  List<WeeklySalesDTO> balance= SalesAndAcquisitions.getWeeklyBalance(monthsAgo,productSale.getSales(),productAcquisition.getSales());
-//                  WeeklySalesDTO notNullBalance=balance.stream().filter(sale->sale.getTotalSales()!=0)
-//                          .findAny().orElse(null);
-//                  if(notNullBalance!=null)
-//                  productBalance.add(new ProductsWeeklySalesDTO(productAcquisition.getId(),productAcquisition.getName(),
-//                          balance));
-                    //List<SaleAndAcquisitionDTO> balance= SalesAndAcquisitions.getSalesAndAcquisitions(monthsAgo,productSale.getSales(),productAcquisition.getSales());
                     List<SaleAndAcquisitionDTO> balance= SalesAndAcquisitions.getValidSalesAndAcquisitions(monthsAgo,productSale.getSales(),productAcquisition.getSales());
-//                    SaleAndAcquisitionDTO notNullBalance=balance.stream().filter(sale->(sale.getTotalSales()+sale.getTotalAcquisitions())!=0)
-//                          .findAny().orElse(null);
-//                  if(notNullBalance!=null)
                   productBalance.add(new ProductWeeklySalesAndAcquisitions(productAcquisition.getId(),productAcquisition.getName(),
                           productAcquisition.getAvatar(),
                           balance));
@@ -288,31 +257,13 @@ public class PositionService {
             }
         }
        productBalance.sort((o1, o2) -> {
-//           Double firstSum = o1.getSales().stream().mapToDouble(WeeklySalesDTO::getTotalSales)
-//                   .sum();
-//           Double secondSum = o2.getSales().stream().mapToDouble(WeeklySalesDTO::getTotalSales)
-//                   .sum();
            Double firstSum=o1.getBalance().stream().mapToDouble(SaleAndAcquisitionDTO::getBalance).sum();
            Double secondSum=o2.getBalance().stream().mapToDouble(SaleAndAcquisitionDTO::getBalance).sum();
-
-           System.out.println("firstSum"+firstSum);
-           System.out.println("secondSum"+secondSum);
-//           return Double.valueOf(firstSum).compareTo(secondSum);
-//           return Double.valueOf(firstSum)-Double.valueOf(secondSum);
            return Double.valueOf(secondSum).compareTo(firstSum);
        });
-//        List<ProductsWeeklySalesDTO> top = productBalance.subList(0, Math.min(productBalance.size(), nrOfPositions));
-  System.out.println("The sorted list");
-  productBalance.forEach(item->{
-      System.out.println(item.toString());
-  });
-
         List<ProductWeeklySalesAndAcquisitions> top = productBalance.subList(0, Math.min(productBalance.size(), nrOfPositions));
-
         return ResponseEntity.ok().body(top);
-
     }
-
     public ResponseEntity<?> getLastWeekSales() {
       List<ProductWeekBalanceDTO> lastWeekSales=
               positionRepository.getLastWeekSales();

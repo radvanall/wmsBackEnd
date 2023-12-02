@@ -47,8 +47,6 @@ public class CustomerService {
                         new SingleCustomerInvoice(invoice.getId(),invoice.getDate(),
                                 invoice.getShipped(),invoice.getAddress(),invoice.getTotalPrice(),
                         invoice.getOperator().getNickname())).collect(Collectors.toList()));
-
-
         return customerDTO;
     }
 
@@ -82,8 +80,6 @@ public class CustomerService {
 
 
             String dbFilePath = "/img/clients/" + imgName;
-//            String filePath = folder + imgName;
-//            Files.write(Paths.get(filePath), bytes);
             Customer customer = new Customer(nickname,
                      dbFilePath,
                     email.isEmpty() ? "--" : email,

@@ -46,7 +46,6 @@ public class NewUserDetails implements UserDetails {
 
     public void addRole(String role) {
         this.authorities.add(new SimpleGrantedAuthority(role));
-//        this.roles.add(role);
     }
 
     public Integer getId() {

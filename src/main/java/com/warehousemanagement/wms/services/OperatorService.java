@@ -98,7 +98,6 @@ public class OperatorService {
         getOperator.addInvoice(operator.getInvoices().get(0));
         operatorRepository.save(getOperator);
     }
-    /////////Convert to  DTO
     public OperatorTableDTO convertToOperatorTableDTO(Operator operator){
         OperatorTableDTO operatorTableDTO=new OperatorTableDTO();
         operatorTableDTO.setId(operator.getId());
@@ -136,8 +135,6 @@ public class OperatorService {
             }
             operator.setOperatorWorkDays(operatorWorkDays);
             operatorRepository.save(operator);
-//            operatorWorkDays.add(new OperatorWorkDays(newDate,workedHours));
-//            operator.setOperatorWorkDays(operator.);
             return ResponseEntity.ok().body("datele au fost adaugate");
         }catch(ParseException e){
             return ResponseEntity.badRequest().body("Data nu e in format corect");
@@ -177,7 +174,6 @@ public class OperatorService {
                               String imgName,
                               MultipartFile file) {
         try {
-//            System.out.println(nickname + imgName + phone + address + email);
             Optional<Operator> existingOperator=operatorRepository.findByNickname(nickname);
             if(existingOperator.isPresent()) return "Operator cu așa nickname există.";
             Optional<Administrator> existingAdministrator=administratorRepository.findByNickname(nickname);
@@ -194,8 +190,6 @@ public class OperatorService {
 
 
             String dbFilePath = "/img/operators/" + imgName;
-//            String filePath = folder + imgName;
-//            Files.write(Paths.get(filePath), bytes);
             Operator operator = new Operator(nickname,
                     passwordEncoder.encode("11111"),
                     dbFilePath,
@@ -281,14 +275,12 @@ public class OperatorService {
             return "An error occurred: " + e.getMessage();
         }
     }
-
     public String changePassword(Integer id, String oldPassword, String newPassword) {
         try{
             Optional<Operator> optionalOperator=operatorRepository.findById(id);
             if(!optionalOperator.isPresent()) return "Operatorul nu a fost gasit.";
             Operator operator=optionalOperator.get();
           if(!passwordEncoder.matches(oldPassword,operator.getPassword())) return "Parolă incorectă";
-         // if(!oldPassword.equals(operator.getPassword())) return "Parolă incorectă";
             operator.setPassword(passwordEncoder.encode(newPassword));
             operatorRepository.save(operator);
             return "Parola a fost modificată";

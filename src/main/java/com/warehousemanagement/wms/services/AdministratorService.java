@@ -70,19 +70,6 @@ public class AdministratorService {
                     admin.getPhone(),admin.getStatus()
             ));
         }
-//        StringBuilder sb=new StringBuilder();
-//        try(ReadChannel channel =storage.reader("wmsstorage","linkpowershell.txt")){
-//            ByteBuffer bytes=ByteBuffer.allocate(64*1024);
-//            while(channel.read(bytes)>0){
-//                bytes.flip();
-//                String data=new String(bytes.array(),0,bytes.limit());
-//                sb.append(data);
-//                bytes.clear();
-//            }
-//            System.out.println("stirngtext:"+sb.toString());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         return administratorsDTOS;
     }
     public ResponseEntity<?> getAdministrator(Integer id){
@@ -123,7 +110,6 @@ public class AdministratorService {
             Administrator administrator=optionalOperator.get();
             System.out.println(password);
             System.out.println(administrator.getPassword());
-//            if(!password.equals(administrator.getPassword())) {
             if(!passwordEncoder.matches(password,administrator.getPassword())) {
                 System.out.println(!password.equals(administrator.getPassword()));return "Parola incorectă";};
             return updateAdmin(nickname, name, surname, email, phone, address, imgName, file, administrator);
@@ -150,17 +136,13 @@ public class AdministratorService {
                 imgName=imageHandler.setImgName(imgName, folder);
                 long now = java.time.Instant.now().getEpochSecond();
                 String filePath = folder + imgName+now;
-//                Files.write(Paths.get(filePath), bytes);
                 BlobId blobId=BlobId.of("wmsstorage","img/admins/"+imgName);
                 BlobInfo blobInfo=BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
-//                BlobInfo blobInfo=BlobInfo.newBuilder(blobId).build();
                 storage.create(blobInfo,bytes);
             }
 
 
             String dbFilePath = "/img/admins/" + imgName;
-//            String filePath = folder + imgName;
-//            Files.write(Paths.get(filePath), bytes);
             Administrator administrator = new Administrator(nickname,
                     passwordEncoder.encode("11111"),
                     dbFilePath,
@@ -276,8 +258,6 @@ public class AdministratorService {
             }
             administrator.setAdminWorkDays(adminWorkDays);
             administratorRepository.save(administrator);
-//            operatorWorkDays.add(new OperatorWorkDays(newDate,workedHours));
-//            operator.setOperatorWorkDays(operator.);
             return ResponseEntity.ok().body("datele au fost adaugate");
         }catch(ParseException e){
             return ResponseEntity.badRequest().body("Data nu e in format corect");
@@ -294,7 +274,6 @@ public class AdministratorService {
             System.out.println(administrator.getPassword());
             System.out.println(oldPassword);
           if(!passwordEncoder.matches(oldPassword,administrator.getPassword())) return "Parolă incorectă";
-  //          if(!oldPassword.equals(administrator.getPassword())) return "Parolă incorectă";
             administrator.setPassword(passwordEncoder.encode(newPassword));
             administratorRepository.save(administrator);
             return "Parola a fost modificată";

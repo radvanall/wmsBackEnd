@@ -27,10 +27,6 @@ public class InvoiceReceptionService {
     private AdministratorRepository administratorRepository;
     @Autowired
     private ProviderRepository providerRepository;
-
-//    public void setInvoiceReception(List<InvoiceReception> invoiceReceptionsList) {
-//        invoiceReceptionRepository.saveAll(invoiceReceptionsList);
-//    }
         public void setInvoiceReception(List<InvoiceStockDTO> invoiceStockDTOList,Integer providerId,Integer adminId) {
             System.out.println("invoiceList="+invoiceStockDTOList.toString());
             System.out.println("providerId="+providerId);
