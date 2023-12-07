@@ -11,8 +11,6 @@ import java.util.List;
 public class FindSumForDate {
     public static double findSumForDate(List<WeeklySalesDTO> dtoList, Date weekStart,Date weekEnd)  {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-         // Parse the DTO's date string
    try {
        for (WeeklySalesDTO dto : dtoList) {
            String formattedWeekStart = dateFormat.format(weekStart);
