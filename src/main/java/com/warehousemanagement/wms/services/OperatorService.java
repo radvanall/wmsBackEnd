@@ -116,17 +116,12 @@ public class OperatorService {
         try {
             Date today=new Date();
             Date newDate = new SimpleDateFormat("dd.MM.yyyy").parse(date);
-            System.out.println("id=" + id);
-            System.out.println("date=" + newDate);
-            System.out.println("workedHours=" + workedHours);
-           System.out.println(CompareDateDMY.compareDates(today,newDate));
-
+            System.out.println(CompareDateDMY.compareDates(today,newDate));
             Optional<Operator> optionalOperator=operatorRepository.findById(id);
             if(!optionalOperator.isPresent()) return  ResponseEntity.badRequest().body("Operatorul nu exista");
             Operator operator=optionalOperator.get();
             List<OperatorWorkDays> operatorWorkDays=operator.getOperatorWorkDays();
             OperatorWorkDays foundDay=findDay(operatorWorkDays,newDate );
-            System.out.println("foundDate=" + foundDay);
             if(foundDay==null){
                 operatorWorkDays.add(new OperatorWorkDays(newDate,workedHours));
             }
@@ -228,12 +223,8 @@ public class OperatorService {
             byte[] bytes=file.getBytes();
             filePath=folder+newImgName;
             Files.write(Paths.get(filePath), bytes);
-            System.out.println("aL DOILEA"+newImgName);
             boolean areEqual= CompareFiles.compareFiles(avatarImage,fileImg);
             if(!areEqual){
-                System.out.println("areEqual="+areEqual);
-                System.out.println("avatarImage"+avatarImage.getAbsolutePath());
-                System.out.println("fileImg"+fileImg.getAbsolutePath());
                 if(!fileImg.delete()) return "Probleme la stergera imaginii vechi";
             }
 
@@ -247,8 +238,6 @@ public class OperatorService {
             operator.setEmail(email);
             operator.setAvatar(dbFilePath);
             operatorRepository.save(operator);
-
-
         return "Operatorul a fost editat cu succes";
     }catch (Exception e){
         return "An error occurred: " + e.getMessage();
