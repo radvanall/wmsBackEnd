@@ -15,9 +15,6 @@ public class FindSumForDate {
        for (WeeklySalesDTO dto : dtoList) {
            String formattedWeekStart = dateFormat.format(weekStart);
            String formattedWeekEnd = dateFormat.format(weekEnd);
-           System.out.println("dtoDate" + dto.getWeekStart());
-           System.out.println("weekStart" + weekStart.getTime());
-           System.out.println("weekEnd" + weekEnd.getTime());
            if (dto.getWeekStart().compareTo(dateFormat.parse(formattedWeekStart)) >= 0 &&
                    dto.getWeekStart().compareTo(dateFormat.parse(formattedWeekEnd)) <= 0) {
                return dto.getTotalSales();

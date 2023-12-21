@@ -28,9 +28,6 @@ public class InvoiceReceptionService {
     @Autowired
     private ProviderRepository providerRepository;
         public void setInvoiceReception(List<InvoiceStockDTO> invoiceStockDTOList,Integer providerId,Integer adminId) {
-            System.out.println("invoiceList="+invoiceStockDTOList.toString());
-            System.out.println("providerId="+providerId);
-            System.out.println("adminId="+adminId);
             List<Stock>stocks=new ArrayList<>();
             for(InvoiceStockDTO invoiceStock:invoiceStockDTOList){
                 Position position=positionRepository.findById(invoiceStock.getProductId()).get();
