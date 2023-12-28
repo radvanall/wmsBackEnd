@@ -14,7 +14,6 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     public void createOrder(Integer productId, Integer customerId, Integer quantity) {
-
         orderRepository.addOrders(productId,customerId,quantity);
     }
 

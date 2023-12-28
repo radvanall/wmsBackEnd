@@ -37,10 +37,9 @@ public class StockService {
         Pageable pageable= PageRequest.of(page,size,sortByDateOfCreation);
         Page<Stock> stockPage;
         if(filterCriteriaDTO==null){
-            System.out.println("object is null");
             stockPage=stockRepository.findAll(pageable);
         }
-        else{ System.out.println("filterCriteria:"+filterCriteriaDTO.toString());
+        else{
         stockPage=stockRepository.findAllByFilterCriteria(
                 filterCriteriaDTO.getProviders(),
                 filterCriteriaDTO.getCategories(),

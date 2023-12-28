@@ -26,7 +26,6 @@ public class InvoiceService {
     CustomerRepository customerRepository;
 
     public ResponseEntity<String> setInvoice(InvoiceDTO invoicesList) {
-        System.out.println(invoicesList.toString());
         if(invoicesList.getAddress().isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Introduce-ți adresa");
         if(invoicesList.getClientId()==null)
@@ -50,7 +49,6 @@ public class InvoiceService {
                        stock.setState("soldOut");}
                        orders.add(new Order(invoiceTableDTO.getQuantity(),stock,invoice));
                        totalPrice+=invoiceTableDTO.getQuantity()*stock.getSellingPrice();
-                       System.out.println("totalPrice:"+totalPrice);
 
                } else if(stock.getState().equals("forSale")){
                    stock.setRemainingQuantity(stock.getRemainingQuantity()-invoiceTableDTO.getQuantity());
@@ -59,7 +57,6 @@ public class InvoiceService {
                    }else stock.setState("inSale");
                        orders.add(new Order(invoiceTableDTO.getQuantity(),stock,invoice));
                        totalPrice+=invoiceTableDTO.getQuantity()*stock.getSellingPrice();
-                       System.out.println("totalPrice:"+totalPrice);
 
                }else errors.add("Stocul: "+stock.getPosition().getName()+ " nu este pentru vînzare");
 
@@ -90,8 +87,6 @@ public class InvoiceService {
              invoice.setOperator(operator);
              invoice.setDate(invoicesList.getDate());
             invoiceRepository.save(invoice);
-            System.out.println("Invoice:"+invoice.toString());
-            System.out.println("invoice:"+invoice);
             return ResponseEntity.ok("Factura a fost creată cu succes");
         }  catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
@@ -136,7 +131,6 @@ public class InvoiceService {
     }
 
     public ResponseEntity<String>  deleteInvoice(Integer id) {
-        System.out.println(id);
         try {
             Optional<Invoice> optionalInvoice=invoiceRepository.findById(id);
             if(!optionalInvoice.isPresent())
@@ -179,12 +173,10 @@ public class InvoiceService {
             invoiceRepository.save(invoice);
             stocks.forEach(stock->{
                 stockRepository.save(stock);
-                System.out.println("sTOKS:"+ stock.toString());
 
             });
             ordersToDelete.forEach(orderToDelete->{
                 orderRepository.delete(orderToDelete);
-               System.out.println("Orders:"+ orderToDelete.toString());
             });
         }  catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
@@ -244,8 +236,6 @@ public class InvoiceService {
 
     public ResponseEntity<String> changeAddress(Integer id, String newAddress) {
         try {
-            System.out.println("id:" + id);
-            System.out.println("newAddress:" + newAddress);
             Invoice invoice = invoiceRepository.findById(id).get();
             invoice.setAddress(newAddress);
             invoiceRepository.save(invoice);
