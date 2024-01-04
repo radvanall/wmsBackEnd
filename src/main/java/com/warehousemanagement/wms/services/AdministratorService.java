@@ -108,8 +108,6 @@ public class AdministratorService {
             Optional<Administrator> optionalOperator=administratorRepository.findById(id);
             if(!optionalOperator.isPresent()) return "Administratorul nu a fost gasit";
             Administrator administrator=optionalOperator.get();
-            System.out.println(password);
-            System.out.println(administrator.getPassword());
             if(!passwordEncoder.matches(password,administrator.getPassword())) {
                 System.out.println(!password.equals(administrator.getPassword()));return "Parola incorectă";};
             return updateAdmin(nickname, name, surname, email, phone, address, imgName, file, administrator);
@@ -123,7 +121,6 @@ public class AdministratorService {
                                    Integer phone, String address,
                                    String imgName, MultipartFile file) {
         try {
-//            System.out.println(nickname + imgName + phone + address + email);
             ImageHandler imageHandler = new ImageHandler();
             Optional<Operator> existingOperator=operatorRepository.findByNickname(nickname);
             if(existingOperator.isPresent()) return "Operator cu așa nickname există.";
@@ -237,19 +234,12 @@ public class AdministratorService {
 
     public ResponseEntity<?> setWorkedHours(Integer id, String date, Integer workedHours) {
         try {
-            Date today=new Date();
             Date newDate = new SimpleDateFormat("dd.MM.yyyy").parse(date);
-            System.out.println("id=" + id);
-            System.out.println("date=" + newDate);
-            System.out.println("workedHours=" + workedHours);
-            System.out.println(CompareDateDMY.compareDates(today,newDate));
-
             Optional<Administrator> optionalAdministrator=administratorRepository.findById(id);
             if(!optionalAdministrator.isPresent()) return  ResponseEntity.badRequest().body("Administratorul nu exista");
             Administrator administrator=optionalAdministrator.get();
             List<AdminWorkDays> adminWorkDays=administrator.getAdminWorkDays();
             AdminWorkDays foundDay=findDay(adminWorkDays,newDate );
-            System.out.println("foundDate=" + foundDay);
             if(foundDay==null){
                 adminWorkDays.add(new AdminWorkDays(newDate,workedHours));
             }
@@ -271,8 +261,6 @@ public class AdministratorService {
             Optional<Administrator> optionalAdministrator=administratorRepository.findById(id);
             if(!optionalAdministrator.isPresent()) return "Administratorul nu a fost gasit.";
             Administrator administrator=optionalAdministrator.get();
-            System.out.println(administrator.getPassword());
-            System.out.println(oldPassword);
           if(!passwordEncoder.matches(oldPassword,administrator.getPassword())) return "Parolă incorectă";
             administrator.setPassword(passwordEncoder.encode(newPassword));
             administratorRepository.save(administrator);
