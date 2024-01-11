@@ -94,11 +94,7 @@ public class AdministratorService {
         return ResponseEntity.ok().body(administratorDTO);
 
     }
-    public void updateAdministrator(Administrator administrator,Integer id){
-        Administrator getAdministrator=administratorRepository.findById(id).get();
-        getAdministrator.copyAdministrator(administrator);
-        administratorRepository.save(getAdministrator);
-    }
+
 
     public String updateAdministrator(Integer id, String nickname, String name,
                                       String surname, String email, Integer phone,
@@ -164,7 +160,6 @@ public class AdministratorService {
             if(!optionalOperator.isPresent()) return "Administratorul nu a fost gasit";
             Administrator administrator=optionalOperator.get();
 
-            System.out.println(administrator.getPassword());
             return updateAdmin(nickname, name, surname, email, phone, address, imgName, file, administrator);
         }catch (Exception e){
             return "An error occurred: " + e.getMessage();
