@@ -33,14 +33,6 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    public String[] extractRoles(String token) {
-        Claims claims = extractAllClaims(token);
-        String claimRoles=(String) claims.get("roles");
-        claimRoles=claimRoles.replace("[","").replace("]","");
-        String[] roleNames=claimRoles.split(",");
-        return roleNames;
-    }
-
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
