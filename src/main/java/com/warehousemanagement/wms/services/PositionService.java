@@ -237,10 +237,6 @@ public class PositionService {
         Date startDate=monthsAgo.getTime();
         List<TopSalesDTO> topSalesDTOS=positionRepository.getAllSales(startDate);
         List<TopSalesDTO> topAcquisitionsDTOS=positionRepository.getAllAcquisitions(startDate);
-        topSalesDTOS.forEach(item->
-                System.out.println(item.toString()));
-        topAcquisitionsDTOS.forEach(item->
-                System.out.println(item.toString()));
         List<ProductsWeeklySalesDTO> productSales=getProductWeeklyData(topSalesDTOS);
         List<ProductsWeeklySalesDTO> productAcquisitions=getProductWeeklyData(topAcquisitionsDTOS);
         List<ProductWeeklySalesAndAcquisitions> productBalance=new ArrayList<>();

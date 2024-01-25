@@ -21,7 +21,6 @@ public class SalesAndAcquisitions {
             weekStart.set(Calendar.SECOND, 0);
             Calendar weekEnd = (Calendar) weekStart.clone();
             weekEnd.add(Calendar.DAY_OF_WEEK, 6);
-            System.out.println("weekStart="+weekStart.getTime());
             double sumSales = FindSumForDate.findSumForDate(salesDTOS, weekStart.getTime(),weekEnd.getTime());
             double sumAcquisitions = FindSumForDate.findSumForDate(acquisitionsDTOS, weekStart.getTime(),weekEnd.getTime());
             saleAndAcquisitionDTOS.add(new SaleAndAcquisitionDTO(weekStart.getTime(),sumSales,sumAcquisitions));
