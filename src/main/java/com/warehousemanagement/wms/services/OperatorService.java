@@ -62,8 +62,6 @@ public class OperatorService {
         if(!optionalOperator.isPresent())
             throw new RuntimeException("Operator not found with id: " + id);
         Operator operator=optionalOperator.get();
-        operator.getOperatorWorkDays().stream().forEach(day->
-                System.out.println(day.toString()));
         SingleOperatorDTO operatorDTO=new SingleOperatorDTO(
                 operator.getId(),
                 operator.getNickname(),
@@ -84,8 +82,6 @@ public class OperatorService {
                                 invoice.getCustomer().getNickname(),invoice.getShipped(),invoice.getTotalPrice()))
                 .collect(Collectors.toList())
         );
-        operatorDTO.getWorkedDays().stream().forEach(day->
-                System.out.println(day.toString()));
         return operatorDTO;
     }
     public void updateOperator(Operator operator,Integer id){
@@ -114,9 +110,7 @@ public class OperatorService {
 
     public ResponseEntity<?> setWorkedHours(Integer id, String date, Integer workedHours) {
         try {
-            Date today=new Date();
             Date newDate = new SimpleDateFormat("dd.MM.yyyy").parse(date);
-            System.out.println(CompareDateDMY.compareDates(today,newDate));
             Optional<Operator> optionalOperator=operatorRepository.findById(id);
             if(!optionalOperator.isPresent()) return  ResponseEntity.badRequest().body("Operatorul nu exista");
             Operator operator=optionalOperator.get();
@@ -216,7 +210,6 @@ public class OperatorService {
                 File newFile=new File(folder+newImgName);
                 fileImg.renameTo(newFile);
                 dbFilePath="/img/operators/"+newImgName;
-                System.out.println("Primul"+newImgName);
             }
         }else{
             String newImgName=imageHandler.setImgName(imgName,folder);
