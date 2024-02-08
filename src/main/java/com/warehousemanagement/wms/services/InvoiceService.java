@@ -188,7 +188,6 @@ public class InvoiceService {
         try {
         if(newOrderDTOS.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nu a-ți introdus nici un produs.");
-        newOrderDTOS.forEach(order->System.out.println("Order:"+order.toString()));
         Invoice invoice=invoiceRepository.findById(newOrderDTOS.get(0).getInvoiceId()).get();
         List<Stock> stocks=new ArrayList<>();
         List <Order> currentInvoiceOrders=invoice.getOrder();
