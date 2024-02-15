@@ -1,36 +1,5 @@
 package com.warehousemanagement.wms.dto;
 
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.SqlResultSetMapping;
-//
-//
-//
-//@NamedNativeQuery(
-//        name = "ProductTableDTO.getTableProductsDTOList",
-//        query = "select p.id as id ,p.image as img, p.name as name,c.category_name as categorie,s.subcategory_name as subcategorie," +
-//                "pr.provider_name as producator,p.unity as unitate  from work.position p inner join work.provider pr on p.provider_id=pr.id inner join " +
-//                "work.subcategory s on p.subcategory_id=s.id inner join work.category c on p.category_id=c.id order by p.id",
-//        resultSetMapping = "ProductTableDTO"
-//)
-//
-//@SqlResultSetMapping(
-//        name="ProductTableDTO",
-//        classes = @ConstructorResult(
-//                targetClass = ProductTableDTO.class,
-//                columns={
-//                        @ColumnResult(name="id", type=Integer.class),
-//                        @ColumnResult(name="img",type=String.class),
-//                        @ColumnResult(name="name",type=String.class),
-//                        @ColumnResult(name="categorie",type=String.class),
-//                        @ColumnResult(name="subcategorie",type=String.class),
-//                        @ColumnResult(name="producator",type=String.class),
-//                        @ColumnResult(name="unitate",type=String.class)
-//
-//                }
-//        )
-//)
 public class ProductTableDTO {
     private Integer id;
     private String img;
