@@ -105,7 +105,7 @@ public class AdministratorService {
             if(!optionalOperator.isPresent()) return "Administratorul nu a fost gasit";
             Administrator administrator=optionalOperator.get();
             if(!passwordEncoder.matches(password,administrator.getPassword())) {
-                System.out.println(!password.equals(administrator.getPassword()));return "Parola incorectă";};
+                return "Parola incorectă";};
             return updateAdmin(nickname, name, surname, email, phone, address, imgName, file, administrator);
         }catch (Exception e){
             return "An error occurred: " + e.getMessage();
@@ -178,7 +178,6 @@ public class AdministratorService {
                 File newFile=new File(folder+newImgName);
                 fileImg.renameTo(newFile);
                 dbFilePath="/img/admins/"+newImgName;
-                System.out.println("Primul"+newImgName);
             }
         }else{
             String newImgName=imageHandler.setImgName(imgName,folder);
