@@ -34,7 +34,6 @@ public class InvoiceReceptionService {
                 stocks.add(new Stock(invoiceStock.getStockQuantity(),invoiceStock.getBuyingPrice(),invoiceStock.getSellingPrice(),position));
 
             }
-            System.out.println("invoiceList2="+stocks.toString());
             Administrator administrator =administratorRepository.findById(adminId).get();
             Provider provider=providerRepository.findById(providerId).get();
 
@@ -53,7 +52,6 @@ public class InvoiceReceptionService {
          invoiceReception.getStocks().add(newStock);
          stockRepository.save(newStock);
          invoiceReceptionRepository.save(invoiceReception);
-         System.out.println(position);
          return "Stocul a fost salvat";
      }
     public InvoiceReceptionDTO getInvoiceReception(Integer id) {
