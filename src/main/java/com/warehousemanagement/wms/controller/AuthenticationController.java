@@ -30,14 +30,12 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        System.out.println("username"+ authenticationRequest.getUsername());
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
                             authenticationRequest.getPassword())
             );
         } catch (BadCredentialsException e) {
-            System.out.println("Incorrect username or password"+ e);
             return ResponseEntity.badRequest().body("Nickname-ul sau parola este incorectă");
         }catch (Exception ex){
             System.out.println("Incorrect "+ ex);
