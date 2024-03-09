@@ -40,10 +40,8 @@ public class AuthenticationController {
         }catch (Exception ex){
             System.out.println("Incorrect "+ ex);
         }
-        System.out.println("Incorrect username or password");
        final NewUserDetails userDetails=userDetailsService
                .loadUserByUsername(authenticationRequest.getUsername());
-        System.out.println("User details:"+userDetails.getUsername());
         final String jwt=jwtTokenUtil.generateToken(userDetails);
         return ResponseEntity.ok(new AuthenticationResponse(jwt,userDetails.getUsername(),
                 userDetails.getAvatar(),userDetails.getId(),
