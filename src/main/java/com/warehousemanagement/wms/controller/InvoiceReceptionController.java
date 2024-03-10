@@ -26,7 +26,6 @@ public class InvoiceReceptionController {
     public ResponseEntity<?> addInvoice(@RequestParam("data") String  data,
                                         @RequestParam("providerId") Integer providerId,
                                         @RequestParam("adminId") Integer adminId) throws JsonProcessingException {
-        System.out.println("data="+data);
         ObjectMapper mapper = new ObjectMapper();
         List<InvoiceStockDTO> invoiceStockDTO = mapper.readValue(data, new TypeReference<List<InvoiceStockDTO>>(){});
         invoiceReceptionService.setInvoiceReception(invoiceStockDTO, providerId, adminId);
@@ -67,7 +66,6 @@ public class InvoiceReceptionController {
     @RequestMapping(method = RequestMethod.POST, value="/validate")
     public  ResponseEntity<?> validateInvoice( @RequestBody Map<String, Integer> request){
         Integer id=request.get("id");
-        System.out.println("id="+id);
         String response=invoiceReceptionService.validateInvoice(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
@@ -75,7 +73,6 @@ public class InvoiceReceptionController {
     }
     @RequestMapping(method = RequestMethod.POST, value="/addStock")
     public  ResponseEntity<?> addStock( @RequestBody Map<String, Integer> stock){
-        System.out.println("request="+stock);
         String response=invoiceReceptionService.addStock(stock);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
